@@ -1,0 +1,65 @@
+@charset "UTF-8";
+
+html,
+body,
+main {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-x {
+  overflow-x: auto;
+}
+.scroll-y {
+  overflow-y: auto;
+}
+.flex-justify-center {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+
+.chessboard {
+  width: 600px;
+  height: 600px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.square:hover .piece.black {
+  text-shadow: 0 0 10px #000000;
+  text-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+.square:hover .piece.white {
+  text-shadow: 0 0 10px #FFFFFF;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+
+.pawn:before {
+  content: '♟';
+}
+.rook:before {
+  content: '♜';
+}
+.knight:before {
+  content: '♞';
+}
+.bishop:before {
+  content: '♝';
+}
+.queen:before {
+  content: '♛';
+}
+.king:before {
+  content: '♚';
+}
+
+
+.chat {
+  width: 300px;
+}
