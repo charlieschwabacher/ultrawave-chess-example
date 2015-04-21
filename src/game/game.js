@@ -31,19 +31,23 @@ module.exports = class Game {
   // returns a list of all valid moves for a piece, given a set of other pieces
   // sharing the board - this list includes moves that may be illegal (for
   // example moves that would put a player in check)
-  validMovesList(piece, pieces) {
+  validMovesList(piece, pieces = this.data.pieces) {
     return validMoves[piece.type](piece, pieces)
   }
 
   // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
   // map includes only legal moves
   validMoves(piece) {
+    const pieces = this.data.pieces
+    const index = pieces.indexOf(piece)
 
     // get a list of valid moves, filter out illegal moves
-    const validMoves = this.validMovesList(piece, this.data.pieces)
-    const moves = validMoves.filter((move) => {
-      // FILL THIS IN TO FILTER OUT MOVES THAT WOULD PUT A PLAYER IN CHECK
-      return true
+    const moves = this.validMovesList(piece, pieces).filter((move) => {
+      const newPiece = {type: piece.type, color: piece.color, position: move}
+      const newPieces = pieces.slice(0)
+      newPieces[index] = newPiece
+
+      return !isCheck(piece.color, newPieces)
     })
 
     // convert list to map
@@ -57,50 +61,52 @@ module.exports = class Game {
     return result
   }
 
-  isCheck(color, pieces) {
+  isCheck(color, pieces = this.data.pieces) {
+    const king = pieces.find((p) => p.color === color && p.type === 'king')
+    const [i, j] = king.position
 
-  }
-
-  isCheckmate() {
-
+    for (let piece of pieces) {
+      for (let [ii, jj] of validMovesList(piece, pieces)) {
+        if (i === ii && j === jj) return true
+      }
+    }
+    return false
   }
 
   movePiece(piece, [i, j]) {
     const opposingColor = piece.color === 'white' ? 'black' : 'white'
     const pieces = this.data.pieces
     const index = pieces.indexOf(piece)
+    const initialPosition = piece.position
 
-    if (index >= 0) {
-      const initialPosition = piece.position
 
-      // update position of piece
-      this.cursor.set(['pieces', index, 'position'], [i, j])
+    // update position of piece
+    this.cursor.set(['pieces', index, 'position'], [i, j])
 
-      // remove any captured piece
-      const capturedPieceIndex = pieces.findIndex(({position}) => {
-        const [ii, jj] = position
-        return i === ii && j === jj
-      })
-      if (capturedPieceIndex >= 0) {
-        this.cursor.splice(['pieces'], capturedPieceIndex, 1)
-      }
-
-      // if a pawn has moved to the last row, promote it to a queen
-      const advanceRow = piece.color === 'white' ? 0 : 7
-      if (piece.type === 'pawn' && i === advanceRow) {
-        this.cursor.set(['pieces', index, 'type'], 'queen')
-      }
-
-      // update current turn
-      this.cursor.set('currentTurn', opposingColor)
-
-      // post a message
-      const from = this.labelFor(initialPosition)
-      const to = this.labelFor(piece.position)
-      this.cursor.push('messages', {
-        sender: null,
-        text: `${piece.color} moved ${piece.type} from ${from} to ${to}`
-      })
+    // remove any captured piece
+    const capturedPieceIndex = pieces.findIndex(({position}) => {
+      const [ii, jj] = position
+      return i === ii && j === jj
+    })
+    if (capturedPieceIndex >= 0) {
+      this.cursor.splice(['pieces'], capturedPieceIndex, 1)
     }
+
+    // if a pawn has moved to the last row, promote it to a queen
+    const advanceRow = piece.color === 'white' ? 0 : 7
+    if (piece.type === 'pawn' && i === advanceRow) {
+      this.cursor.set(['pieces', index, 'type'], 'queen')
+    }
+
+    // update current turn
+    this.cursor.set('currentTurn', opposingColor)
+
+    // post a message
+    const from = this.labelFor(initialPosition)
+    const to = this.labelFor(piece.position)
+    this.cursor.push('messages', {
+      sender: null,
+      text: `${piece.color} moved ${piece.type} from ${from} to ${to}`
+    })
   }
 }
