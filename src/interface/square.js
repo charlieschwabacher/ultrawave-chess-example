@@ -14,9 +14,9 @@ class Square extends React.Component {
     } else if (highlighted) {
       colorClass = 'bg-blue'
     } else if ((i + j) % 2 === 0) {
-      colorClass = 'bg-darken-2'
+      colorClass = 'bg-silver'
     } else {
-      colorClass = 'bg-darken-3'
+      colorClass = 'bg-gray'
     }
 
     return <div

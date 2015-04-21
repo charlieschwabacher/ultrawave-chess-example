@@ -22059,7 +22059,19 @@ module.exports = (function () {
       return '' + letters[j] + '' + numbers[i];
     }
   }, {
+    key: 'validMovesList',
+
+    // returns a list of all valid moves for a piece, given a set of other pieces
+    // sharing the board - this list includes moves that may be illegal (for
+    // example moves that would put a player in check)
+    value: function validMovesList(piece, pieces) {
+      return validMoves[piece.type](piece, pieces);
+    }
+  }, {
     key: 'validMoves',
+
+    // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
+    // map includes only legal moves
     value: (function (_validMoves) {
       function validMoves(_x) {
         return _validMoves.apply(this, arguments);
@@ -22071,9 +22083,16 @@ module.exports = (function () {
 
       return validMoves;
     })(function (piece) {
-      var moves = validMoves[piece.type](piece, this.data.pieces);
-      var result = {};
 
+      // get a list of valid moves, filter out illegal moves
+      var validMoves = this.validMovesList(piece, this.data.pieces);
+      var moves = validMoves.filter(function (move) {
+        // FILL THIS IN TO FILTER OUT MOVES THAT WOULD PUT A PLAYER IN CHECK
+        return true;
+      });
+
+      // convert list to map
+      var result = {};
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -22107,6 +22126,12 @@ module.exports = (function () {
 
       return result;
     })
+  }, {
+    key: 'isCheck',
+    value: function isCheck(color, pieces) {}
+  }, {
+    key: 'isCheckmate',
+    value: function isCheckmate() {}
   }, {
     key: 'movePiece',
     value: function movePiece(piece, _ref5) {
@@ -22500,15 +22525,13 @@ var App = (function (_React$Component) {
     value: function render() {
       var playerColor = this.playerColor();
       var playerTurn = playerColor === this.props.data.get('currentTurn');
-      var game = this.props.game;
-      window.game = game;
 
       return React.createElement(
         'main',
         { className: 'flex flex-column' },
         React.createElement(
           'div',
-          { className: 'py1 px2 white flex-none bg-aqua' },
+          { className: 'flex-none py1 px2 white bg-aqua' },
           React.createElement('span', { className: 'knight' }),
           ' Chess',
           React.createElement(
@@ -22523,20 +22546,16 @@ var App = (function (_React$Component) {
         React.createElement(
           'div',
           { className: 'flex flex-auto' },
+          React.createElement(Chat, {
+            messages: this.props.data.cursor('messages'),
+            name: playerColor || 'Observer ' + this.props.self.slice(0, 4)
+          }),
           React.createElement(
             'div',
-            { className: 'col-3 flex flex-auto' },
-            React.createElement(Chat, {
-              messages: this.props.data.cursor('messages'),
-              name: playerColor || 'Observer ' + this.props.self.slice(0, 4)
-            })
-          ),
-          React.createElement(
-            'div',
-            { className: 'col-9 flex flex-center' },
+            { className: 'flex flex-column flex-center flex-justify-center flex-auto scroll' },
             React.createElement(
               'div',
-              { className: 'mx-auto scroll-x scroll-y' },
+              { className: 'mx-auto p2' },
               React.createElement(GameStatus, {
                 playerColor: playerColor,
                 playerTurn: playerTurn
@@ -22936,9 +22955,9 @@ var Square = (function (_React$Component) {
       } else if (highlighted) {
         colorClass = 'bg-blue';
       } else if ((i + j) % 2 === 0) {
-        colorClass = 'bg-darken-2';
+        colorClass = 'bg-silver';
       } else {
-        colorClass = 'bg-darken-3';
+        colorClass = 'bg-gray';
       }
 
       return React.createElement(

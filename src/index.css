@@ -8,11 +8,8 @@ main {
   height: 100%;
 }
 
-.scroll-x {
-  overflow-x: auto;
-}
-.scroll-y {
-  overflow-y: auto;
+.scroll {
+  overflow: auto;
 }
 .flex-justify-center {
   justify-content: center;
@@ -29,6 +26,11 @@ main {
 }
 .square:hover .piece.white {
   text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+
+.chat {
+  width: 300px;
 }
 
 

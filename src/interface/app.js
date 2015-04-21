@@ -20,11 +20,9 @@ class App extends React.Component {
   render() {
     const playerColor = this.playerColor()
     const playerTurn = playerColor === this.props.data.get('currentTurn')
-    const game = this.props.game
-    window.game = game
 
     return <main className='flex flex-column'>
-      <div className='py1 px2 white flex-none bg-aqua'>
+      <div className='flex-none py1 px2 white bg-aqua'>
         <span className='knight'/> Chess
         <a
           className="right"
@@ -34,14 +32,12 @@ class App extends React.Component {
         </a>
       </div>
       <div className='flex flex-auto'>
-        <div className='col-3 flex flex-auto'>
-          <Chat
-            messages={this.props.data.cursor('messages')}
-            name={playerColor || `Observer ${this.props.self.slice(0,4)}`}
-          />
-        </div>
-        <div className='col-9 flex flex-center'>
-          <div className='mx-auto scroll-x scroll-y'>
+        <Chat
+          messages={this.props.data.cursor('messages')}
+          name={playerColor || `Observer ${this.props.self.slice(0,4)}`}
+        />
+        <div className='flex flex-column flex-center flex-justify-center flex-auto scroll'>
+          <div className='mx-auto p2'>
             <GameStatus
               playerColor={playerColor}
               playerTurn={playerTurn}

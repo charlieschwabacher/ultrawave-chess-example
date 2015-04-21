@@ -28,16 +28,41 @@ module.exports = class Game {
     return `${letters[j]}${numbers[i]}`
   }
 
-  validMoves(piece) {
-    const moves = validMoves[piece.type](piece, this.data.pieces)
-    const result = {}
+  // returns a list of all valid moves for a piece, given a set of other pieces
+  // sharing the board - this list includes moves that may be illegal (for
+  // example moves that would put a player in check)
+  validMovesList(piece, pieces) {
+    return validMoves[piece.type](piece, pieces)
+  }
 
+  // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
+  // map includes only legal moves
+  validMoves(piece) {
+
+    // get a list of valid moves, filter out illegal moves
+    const validMoves = this.validMovesList(piece, this.data.pieces)
+    const moves = validMoves.filter((move) => {
+      // FILL THIS IN TO FILTER OUT MOVES THAT WOULD PUT A PLAYER IN CHECK
+      return true
+    })
+
+    // convert list to map
+    const result = {}
     for (let move of moves) {
       const [i, j] = move
       result[i] = result[i] || {}
       result[i][j] = true
     }
+
     return result
+  }
+
+  isCheck(color, pieces) {
+
+  }
+
+  isCheckmate() {
+
   }
 
   movePiece(piece, [i, j]) {
