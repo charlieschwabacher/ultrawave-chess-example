@@ -16,18 +16,8 @@ const pieceOfColorAtPosition = (color, position, pieces) => {
   return false
 }
 
-const movesArrayToObject = (moves) => {
-  const result = {}
-  for (let move of moves) {
-    const [i, j] = move
-    result[i] = result[i] || {}
-    result[i][j] = true
-  }
-  return result
-}
 
-
-const types = {
+const validMoves = {
 
   pawn: ({color, position}, pieces) => {
     const [i, j] = position
@@ -130,8 +120,8 @@ const types = {
     // the queen move in either a straight or diagonal line in any direction
     // until she encouters a piece (she can make any move a rook or bishop can
     // make)
-    const rook = types.rook(piece, pieces)
-    const bishop = types.bishop(piece, pieces)
+    const rook = validMoves.rook(piece, pieces)
+    const bishop = validMoves.bishop(piece, pieces)
     return rook.concat(bishop)
   },
 
@@ -152,8 +142,4 @@ const types = {
 }
 
 
-
-module.exports = function validMoves(piece, pieces) {
-  const moves = types[piece.type](piece, pieces)
-  return movesArrayToObject(moves)
-}
+module.exports = validMoves

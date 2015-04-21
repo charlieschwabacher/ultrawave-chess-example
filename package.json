@@ -6,7 +6,7 @@
     "start": "node server.js",
     "build-js": "browserify src/index.js -t [ babelify --stage 0 ] --outfile public/index.js",
     "build-css": "cssnext src/index.css public/index.css",
-    "watch-js": "watch -p 'src/*.js' -c 'npm run build-js'",
+    "watch-js": "watch -p 'src/**/*.js' -c 'npm run build-js'",
     "watch-css": "watch -p 'src/*.css' -c 'npm run build-css'",
     "build": "npm run build-js & npm run build-css",
     "watch": "npm run watch-js & npm run watch-css"
