@@ -58,8 +58,3 @@ main {
 .king:before {
   content: '♚';
 }
-
-
-.chat {
-  width: 300px;
-}

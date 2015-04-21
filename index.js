@@ -21981,387 +21981,189 @@ module.exports = require('./lib/ultrawave');
 },{"./lib/ultrawave":160}],172:[function(require,module,exports){
 'use strict';
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
-var Ultrawave = require('ultrawave');
-var React = require('react');
-var Chessboard = require('./chessboard');
-var Chat = require('./chat');
-
-var App = (function (_React$Component) {
-  function App() {
-    _classCallCheck(this, App);
-
-    if (_React$Component != null) {
-      _React$Component.apply(this, arguments);
-    }
-  }
-
-  _inherits(App, _React$Component);
-
-  _createClass(App, [{
-    key: 'render',
-    value: function render() {
-      return React.createElement(
-        'main',
-        { className: 'flex flex-column' },
-        React.createElement(
-          'h3',
-          { className: 'm0 p1 flex-none regular white bg-aqua' },
-          'ultrawave chess'
-        ),
-        React.createElement(
-          'div',
-          { className: 'flex flex-auto' },
-          React.createElement(Chat, {
-            self: this.props.self,
-            messages: this.props.data.cursor('messages')
-          }),
-          React.createElement(
-            'div',
-            {
-              className: 'flex flex-center flex-auto scroll-x scroll-y'
-            },
-            React.createElement(
-              'div',
-              { className: 'flex flex-grow flex-justify-center' },
-              React.createElement(Chessboard, {
-                pieces: this.props.data.cursor('pieces'),
-                playerColor: 'white'
-              })
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return App;
-})(React.Component);
-
-App.propTypes = {
-  data: React.PropTypes.instanceOf(Ultrawave.Cursor).isRequired
-};
-
-module.exports = App;
-
-},{"./chat":173,"./chessboard":174,"react":156,"ultrawave":171}],173:[function(require,module,exports){
-'use strict';
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
-var Ultrawave = require('ultrawave');
-var React = require('react');
-
-var Chat = (function (_React$Component) {
-  function Chat() {
-    var _this = this;
-
-    _classCallCheck(this, Chat);
-
-    if (_React$Component != null) {
-      _React$Component.apply(this, arguments);
-    }
-
-    this.onSubmit = function (e) {
-      e.preventDefault();
-      var input = _this.refs.input.getDOMNode();
-      var message = input.value;
-      input.value = '';
-
-      // push the new message onto the array in ultrawave
-      _this.props.messages.push({ sender: _this.props.self, text: message });
-    };
-  }
-
-  _inherits(Chat, _React$Component);
-
-  _createClass(Chat, [{
-    key: 'onSubmit',
-    value: undefined,
-    enumerable: true
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      // get the messages array object out from our cursor
-      var messages = this.props.messages.get();
-      var self = this.props.self;
-
-      // make sure messages stay scrolled to the bottom
-      setTimeout(function () {
-        _this2.refs.messages.getDOMNode().scrollTop = Infinity;
-      });
-
-      return React.createElement(
-        'section',
-        { className: 'chat flex flex-column flex-none bg-darken-1' },
-        React.createElement(
-          'div',
-          {
-            className: 'scroll-y flex flex-column flex-auto p1',
-            ref: 'messages'
-          },
-          messages.map(function (_ref, i) {
-            var sender = _ref.sender;
-            var text = _ref.text;
-            return React.createElement(
-              'div',
-              {
-                key: i,
-                className: 'mb1 flex-none' + (sender === self ? ' bold' : '') + (sender === null ? ' gray' : '')
-              },
-              text
-            );
-          })
-        ),
-        React.createElement(
-          'form',
-          { className: 'flex p1 flex-none', onSubmit: this.onSubmit },
-          React.createElement('input', {
-            type: 'text',
-            className: 'field-light mr1 flex-auto not-rounded',
-            ref: 'input',
-            placeholder: 'Message'
-          }),
-          React.createElement(
-            'button',
-            {
-              type: 'submit',
-              className: 'button not-rounded white '
-            },
-            'Send'
-          )
-        )
-      );
-    }
-  }]);
-
-  return Chat;
-})(React.Component);
-
-Chat.propTypes = {
-  self: React.PropTypes.string.isRequired,
-  messages: React.PropTypes.instanceOf(Ultrawave.Cursor).isRequired
-};
-
-module.exports = Chat;
-
-},{"react":156,"ultrawave":171}],174:[function(require,module,exports){
-'use strict';
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
-var Ultrawave = require('ultrawave');
-var React = require('react');
-var range = require('./range');
-var validMoves = require('./valid_moves');
-
-var numbers = [8, 7, 6, 5, 4, 3, 2, 1];
-var letters = 'abcdefgh'.split('');
-
-var Chessboard = (function (_React$Component) {
-  function Chessboard() {
-    _classCallCheck(this, Chessboard);
-
-    _get(Object.getPrototypeOf(Chessboard.prototype), 'constructor', this).call(this);
-    this.state = {
-      selectedPiece: null
-    };
-  }
-
-  _inherits(Chessboard, _React$Component);
-
-  _createClass(Chessboard, [{
-    key: 'selectPiece',
-    value: function selectPiece(piece) {
-      this.setState({ selectedPiece: piece });
-    }
-  }, {
-    key: 'movePiece',
-    value: function movePiece(piece, position) {
-      var pieces = this.props.pieces.get();
-      var index = pieces.indexOf(piece);
-      if (index >= 0) {
-        this.props.pieces.set([index, 'position'], position);
-        this.clearSelection();
-      }
-    }
-  }, {
-    key: 'clearSelection',
-    value: function clearSelection() {
-      this.setState({ selectedPiece: null });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this = this;
-
-      var pieces = this.props.pieces.get();
-      var selectedPiece = this.state.selectedPiece;
-      var moves = selectedPiece ? validMoves(selectedPiece, pieces) : {};
-
-      return React.createElement(
-        'div',
-        { className: 'chessboard flex flex-column flex-none' },
-        range(8).map(function (i) {
-          var rowPieces = pieces.filter(function (p) {
-            return p.position[0] === i;
-          });
-
-          return React.createElement(
-            'div',
-            { key: i, className: 'flex flex-auto' },
-            range(8).map(function (j) {
-              var piece = rowPieces.find(function (p) {
-                return p.position[1] === j;
-              });
-              var validMove = moves[i] && moves[i][j];
-
-              return React.createElement(
-                'div',
-                {
-                  key: j,
-                  className: 'square flex-auto relative' + (piece && piece === selectedPiece ? ' bg-aqua' : selectedPiece && selectedPiece !== piece && validMove ? ' bg-blue' : (i + j) % 2 === 0 ? ' bg-darken-2' : ' bg-darken-3'),
-                  onClick: piece && piece.color === _this.props.playerColor ? function () {
-                    return _this.selectPiece(piece);
-                  } : selectedPiece && validMove ? function () {
-                    return _this.movePiece(selectedPiece, [i, j]);
-                  } : function () {
-                    return _this.clearSelection();
-                  }
-                },
-                React.createElement(
-                  'div',
-                  { className: 'absolute bottom-0 m1 h6 white' },
-                  letters[j] + numbers[i]
-                ),
-                piece && React.createElement('div', { className: 'piece h1 mt1 absolute left-0 right-0 center ' + ('' + piece.color + ' ' + piece.type) })
-              );
-            })
-          );
-        })
-      );
-    }
-  }]);
-
-  return Chessboard;
-})(React.Component);
-
-Chessboard.propTypes = {
-  pieces: React.PropTypes.instanceOf(Ultrawave.Cursor).isRequired,
-  playerColor: React.PropTypes.string
-};
-
-module.exports = Chessboard;
-
-// map rows from the top
-
-// map columns from the left
-
-// if the piece is selected, give it an aqua background
-
-// if a different piece is selected and this square is a
-// valid move, darken it
-
-// otherwise give it its normal checkered color
-
-// if the player clicks their own piece, select it
-
-// otherwise if a piece is selected and the player clicks
-// a square that can be moved to, move to that square
-
-},{"./range":177,"./valid_moves":178,"react":156,"ultrawave":171}],175:[function(require,module,exports){
-'use strict';
-
-require('./polyfill');
-
-var Ultrawave = require('ultrawave');
-var React = require('react');
-var App = require('./app');
-
-// create some initial data
-
-var initialData = {
+module.exports = {
   messages: [],
-
   players: {
     white: null,
     black: null
   },
-
+  currentTurn: 'white',
   pieces: [
-
   // white
-  { color: 'white', type: 'pawn', position: [6, 0] }, { color: 'white', type: 'pawn', position: [6, 1] }, { color: 'white', type: 'pawn', position: [6, 2] }, { color: 'white', type: 'pawn', position: [6, 3] }, { color: 'white', type: 'pawn', position: [6, 4] }, { color: 'white', type: 'pawn', position: [6, 5] }, { color: 'white', type: 'pawn', position: [6, 6] }, { color: 'white', type: 'pawn', position: [6, 7] }, { color: 'white', type: 'rook', position: [7, 0] }, { color: 'white', type: 'knight', position: [7, 1] }, { color: 'white', type: 'bishop', position: [7, 2] }, { color: 'white', type: 'queen', position: [7, 3] }, { color: 'white', type: 'king', position: [7, 4] }, { color: 'white', type: 'bishop', position: [7, 5] }, { color: 'white', type: 'knight', position: [7, 6] }, { color: 'white', type: 'rook', position: [7, 7] },
+  { id: 'wp1', color: 'white', type: 'pawn', position: [6, 0] }, { id: 'wp2', color: 'white', type: 'pawn', position: [6, 1] }, { id: 'wp3', color: 'white', type: 'pawn', position: [6, 2] }, { id: 'wp4', color: 'white', type: 'pawn', position: [6, 3] }, { id: 'wp5', color: 'white', type: 'pawn', position: [6, 4] }, { id: 'wp6', color: 'white', type: 'pawn', position: [6, 5] }, { id: 'wp7', color: 'white', type: 'pawn', position: [6, 6] }, { id: 'wp8', color: 'white', type: 'pawn', position: [6, 7] }, { id: 'wr1', color: 'white', type: 'rook', position: [7, 0] }, { id: 'wk1', color: 'white', type: 'knight', position: [7, 1] }, { id: 'wb1', color: 'white', type: 'bishop', position: [7, 2] }, { id: 'wqq', color: 'white', type: 'queen', position: [7, 3] }, { id: 'wkk', color: 'white', type: 'king', position: [7, 4] }, { id: 'wb2', color: 'white', type: 'bishop', position: [7, 5] }, { id: 'wk2', color: 'white', type: 'knight', position: [7, 6] }, { id: 'wr2', color: 'white', type: 'rook', position: [7, 7] },
 
   // black
-  { color: 'black', type: 'pawn', position: [1, 0] }, { color: 'black', type: 'pawn', position: [1, 1] }, { color: 'black', type: 'pawn', position: [1, 2] }, { color: 'black', type: 'pawn', position: [1, 3] }, { color: 'black', type: 'pawn', position: [1, 4] }, { color: 'black', type: 'pawn', position: [1, 5] }, { color: 'black', type: 'pawn', position: [1, 6] }, { color: 'black', type: 'pawn', position: [1, 7] }, { color: 'black', type: 'rook', position: [0, 0] }, { color: 'black', type: 'knight', position: [0, 1] }, { color: 'black', type: 'bishop', position: [0, 2] }, { color: 'black', type: 'queen', position: [0, 3] }, { color: 'black', type: 'king', position: [0, 4] }, { color: 'black', type: 'bishop', position: [0, 5] }, { color: 'black', type: 'knight', position: [0, 6] }, { color: 'black', type: 'rook', position: [0, 7] }]
+  { id: 'bp1', color: 'black', type: 'pawn', position: [1, 0] }, { id: 'bp2', color: 'black', type: 'pawn', position: [1, 1] }, { id: 'bp3', color: 'black', type: 'pawn', position: [1, 2] }, { id: 'bp4', color: 'black', type: 'pawn', position: [1, 3] }, { id: 'bp5', color: 'black', type: 'pawn', position: [1, 4] }, { id: 'bp6', color: 'black', type: 'pawn', position: [1, 5] }, { id: 'bp7', color: 'black', type: 'pawn', position: [1, 6] }, { id: 'bp8', color: 'black', type: 'pawn', position: [1, 7] }, { id: 'br1', color: 'black', type: 'rook', position: [0, 0] }, { id: 'bk1', color: 'black', type: 'knight', position: [0, 1] }, { id: 'bb1', color: 'black', type: 'bishop', position: [0, 2] }, { id: 'bqq', color: 'black', type: 'queen', position: [0, 3] }, { id: 'bkk', color: 'black', type: 'king', position: [0, 4] }, { id: 'bb2', color: 'black', type: 'bishop', position: [0, 5] }, { id: 'bk2', color: 'black', type: 'knight', position: [0, 6] }, { id: 'br2', color: 'black', type: 'rook', position: [0, 7] }]
 };
 
-// connect to our peering server on port 8081
-
-var ultrawave = new Ultrawave('ws://' + location.hostname + ':8081');
-
-// create a group based on the pathname, update our react app when data changes
-
-ultrawave.joinOrCreate(location.pathname, initialData, function (data) {
-  React.render(React.createElement(App, { data: data, self: ultrawave.id }), document.body);
-});
-//.catch((e) => console.log(e.stack))
-
-},{"./app":172,"./polyfill":176,"react":156,"ultrawave":171}],176:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 'use strict';
 
-if (!Array.prototype.find) {
-  Array.prototype.find = function (predicate) {
-    if (this == null) {
-      throw new TypeError('Array.prototype.find called on null or undefined');
-    }
-    if (typeof predicate !== 'function') {
-      throw new TypeError('predicate must be a function');
-    }
-    var list = Object(this);
-    var length = list.length >>> 0;
-    var thisArg = arguments[1];
-    var value;
+var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } };
 
-    for (var i = 0; i < length; i++) {
-      value = list[i];
-      if (predicate.call(thisArg, value, i, list)) {
-        return value;
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var validMoves = require('./valid_moves');
+var numbers = [8, 7, 6, 5, 4, 3, 2, 1];
+var letters = 'abcdefgh'.split('');
+
+module.exports = (function () {
+  function Game(cursor) {
+    _classCallCheck(this, Game);
+
+    this.cursor = cursor;
+    this.data = cursor.get();
+  }
+
+  _createClass(Game, [{
+    key: 'pieces',
+    value: function pieces() {
+      return this.data.pieces;
+    }
+  }, {
+    key: 'pieceAtPosition',
+    value: function pieceAtPosition(_ref) {
+      var _ref2 = _slicedToArray(_ref, 2);
+
+      var i = _ref2[0];
+      var j = _ref2[1];
+
+      return this.data.pieces.find(function (_ref3) {
+        var position = _ref3.position;
+
+        var _position = _slicedToArray(position, 2);
+
+        var ii = _position[0];
+        var jj = _position[1];
+
+        return ii === i && jj === j;
+      });
+    }
+  }, {
+    key: 'pieceWithId',
+    value: function pieceWithId(id) {
+      return this.data.pieces.find(function (piece) {
+        return piece.id === id;
+      });
+    }
+  }, {
+    key: 'labelFor',
+    value: function labelFor(_ref4) {
+      var _ref42 = _slicedToArray(_ref4, 2);
+
+      var i = _ref42[0];
+      var j = _ref42[1];
+
+      return '' + letters[j] + '' + numbers[i];
+    }
+  }, {
+    key: 'validMoves',
+    value: (function (_validMoves) {
+      function validMoves(_x) {
+        return _validMoves.apply(this, arguments);
+      }
+
+      validMoves.toString = function () {
+        return _validMoves.toString();
+      };
+
+      return validMoves;
+    })(function (piece) {
+      var moves = validMoves[piece.type](piece, this.data.pieces);
+      var result = {};
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = moves[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var move = _step.value;
+
+          var _move = _slicedToArray(move, 2);
+
+          var i = _move[0];
+          var j = _move[1];
+
+          result[i] = result[i] || {};
+          result[i][j] = true;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return result;
+    })
+  }, {
+    key: 'movePiece',
+    value: function movePiece(piece, _ref5) {
+      var _ref52 = _slicedToArray(_ref5, 2);
+
+      var i = _ref52[0];
+      var j = _ref52[1];
+
+      var opposingColor = piece.color === 'white' ? 'black' : 'white';
+      var pieces = this.data.pieces;
+      var index = pieces.indexOf(piece);
+
+      if (index >= 0) {
+        var initialPosition = piece.position;
+
+        // update position of piece
+        this.cursor.set(['pieces', index, 'position'], [i, j]);
+
+        // remove any captured piece
+        var capturedPieceIndex = pieces.findIndex(function (_ref6) {
+          var position = _ref6.position;
+
+          var _position2 = _slicedToArray(position, 2);
+
+          var ii = _position2[0];
+          var jj = _position2[1];
+
+          return i === ii && j === jj;
+        });
+        if (capturedPieceIndex >= 0) {
+          this.cursor.splice(['pieces'], capturedPieceIndex, 1);
+        }
+
+        // if a pawn has moved to the last row, promote it to a queen
+        var advanceRow = piece.color === 'white' ? 0 : 7;
+        if (piece.type === 'pawn' && i === advanceRow) {
+          this.cursor.set(['pieces', index, 'type'], 'queen');
+        }
+
+        // update current turn
+        this.cursor.set('currentTurn', opposingColor);
+
+        // post a message
+        var from = this.labelFor(initialPosition);
+        var to = this.labelFor(piece.position);
+        this.cursor.push('messages', {
+          sender: null,
+          text: '' + piece.color + ' moved ' + piece.type + ' from ' + from + ' to ' + to
+        });
       }
     }
-    return undefined;
-  };
-}
+  }]);
 
-},{}],177:[function(require,module,exports){
-"use strict";
+  return Game;
+})();
 
-module.exports = function range(count) {
-  var result = new Array(count);
-  for (var i = 0; i < count; i++) {
-    result[i] = i;
-  }return result;
-};
-
-},{}],178:[function(require,module,exports){
+},{"./valid_moves":174}],174:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } };
@@ -22442,43 +22244,7 @@ var pieceOfColorAtPosition = function pieceOfColorAtPosition(color, position, pi
   return false;
 };
 
-var movesArrayToObject = function movesArrayToObject(moves) {
-  var result = {};
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
-
-  try {
-    for (var _iterator3 = moves[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var move = _step3.value;
-
-      var _move = _slicedToArray(move, 2);
-
-      var i = _move[0];
-      var j = _move[1];
-
-      result[i] = result[i] || {};
-      result[i][j] = true;
-    }
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-        _iterator3['return']();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  return result;
-};
-
-var types = {
+var validMoves = {
 
   pawn: function pawn(_ref, pieces) {
     var color = _ref.color;
@@ -22618,8 +22384,8 @@ var types = {
     // the queen move in either a straight or diagonal line in any direction
     // until she encouters a piece (she can make any move a rook or bishop can
     // make)
-    var rook = types.rook(piece, pieces);
-    var bishop = types.bishop(piece, pieces);
+    var rook = validMoves.rook(piece, pieces);
+    var bishop = validMoves.bishop(piece, pieces);
     return rook.concat(bishop);
   },
 
@@ -22649,9 +22415,619 @@ var types = {
 
 };
 
-module.exports = function validMoves(piece, pieces) {
-  var moves = types[piece.type](piece, pieces);
-  return movesArrayToObject(moves);
+module.exports = validMoves;
+
+},{}],175:[function(require,module,exports){
+'use strict';
+
+require('./util/polyfill');
+
+var Ultrawave = require('ultrawave');
+var React = require('react');
+var App = require('./interface/app');
+var Game = require('./game/game');
+var initialData = require('./data/initial_data');
+
+// connect to our peering server on port 8081
+
+var ultrawave = new Ultrawave('ws://' + location.hostname + ':8081');
+
+// create a group based on the url search string, update our react app
+// when data changes
+
+ultrawave.joinOrCreate(location.search, initialData, function (data) {
+  React.render(React.createElement(App, {
+    data: data,
+    game: new Game(data),
+    self: ultrawave.id
+  }), document.body);
+}).then(function (handle) {
+  // after connecting, claim a color if both have not already been taken
+  var data = handle.data();
+  if (data.players.white == null) {
+    handle.set(['players', 'white'], ultrawave.id);
+  } else if (data.players.black == null) {
+    handle.set(['players', 'black'], ultrawave.id);
+  }
+})['catch'](function (e) {
+  return console.log(e.stack);
+});
+
+},{"./data/initial_data":172,"./game/game":173,"./interface/app":176,"./util/polyfill":182,"react":156,"ultrawave":171}],176:[function(require,module,exports){
+'use strict';
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var React = require('react');
+var Chessboard = require('./chessboard');
+var Chat = require('./chat');
+var GameStatus = require('./game_status');
+
+var _require = require('./prop_types');
+
+var Game = _require.Game;
+var Cursor = _require.Cursor;
+
+var App = (function (_React$Component) {
+  function App() {
+    _classCallCheck(this, App);
+
+    if (_React$Component != null) {
+      _React$Component.apply(this, arguments);
+    }
+  }
+
+  _inherits(App, _React$Component);
+
+  _createClass(App, [{
+    key: 'playerColor',
+    value: function playerColor() {
+      var players = this.props.data.get('players');
+      var self = this.props.self;
+
+      if (players.white === this.props.self) {
+        return 'white';
+      } else if (players.black === this.props.self) {
+        return 'black';
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var playerColor = this.playerColor();
+      var playerTurn = playerColor === this.props.data.get('currentTurn');
+      var game = this.props.game;
+      window.game = game;
+
+      return React.createElement(
+        'main',
+        { className: 'flex flex-column' },
+        React.createElement(
+          'div',
+          { className: 'py1 px2 white flex-none bg-aqua' },
+          React.createElement('span', { className: 'knight' }),
+          ' Chess',
+          React.createElement(
+            'a',
+            {
+              className: 'right',
+              href: '//github.com/charlieschwabacher/ultrawave-chess-example'
+            },
+            'Github'
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'flex flex-auto' },
+          React.createElement(
+            'div',
+            { className: 'col-3 flex flex-auto' },
+            React.createElement(Chat, {
+              messages: this.props.data.cursor('messages'),
+              name: playerColor || 'Observer ' + this.props.self.slice(0, 4)
+            })
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-9 flex flex-center' },
+            React.createElement(
+              'div',
+              { className: 'mx-auto scroll-x scroll-y' },
+              React.createElement(GameStatus, {
+                playerColor: playerColor,
+                playerTurn: playerTurn
+              }),
+              React.createElement(
+                'div',
+                { className: 'flex-auto' },
+                React.createElement(Chessboard, {
+                  game: this.props.game,
+                  playerColor: playerColor,
+                  playerTurn: playerTurn
+                })
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return App;
+})(React.Component);
+
+App.propTypes = {
+  data: Cursor.isRequired,
+  game: Game.isRequired,
+  self: React.PropTypes.string
+};
+
+module.exports = App;
+
+},{"./chat":177,"./chessboard":178,"./game_status":179,"./prop_types":180,"react":156}],177:[function(require,module,exports){
+'use strict';
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var React = require('react');
+
+var _require = require('./prop_types');
+
+var Cursor = _require.Cursor;
+
+var Chat = (function (_React$Component) {
+  function Chat() {
+    var _this = this;
+
+    _classCallCheck(this, Chat);
+
+    if (_React$Component != null) {
+      _React$Component.apply(this, arguments);
+    }
+
+    this.onSubmit = function (e) {
+      e.preventDefault();
+      var input = _this.refs.input.getDOMNode();
+      var message = input.value;
+      input.value = '';
+
+      // push the new message onto the array in ultrawave
+      _this.props.messages.push({ sender: _this.props.name, text: message });
+    };
+  }
+
+  _inherits(Chat, _React$Component);
+
+  _createClass(Chat, [{
+    key: 'onSubmit',
+    value: undefined,
+    enumerable: true
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      // get the messages array object out from our cursor
+      var messages = this.props.messages.get();
+      var name = this.props.name;
+
+      // make sure messages stay scrolled to the bottom
+      setTimeout(function () {
+        _this2.refs.messages.getDOMNode().scrollTop = Infinity;
+      });
+
+      return React.createElement(
+        'section',
+        { className: 'chat flex flex-column flex-none bg-darken-1' },
+        React.createElement(
+          'div',
+          {
+            className: 'scroll-y flex flex-column flex-auto py2',
+            ref: 'messages'
+          },
+          messages.map(function (_ref, i) {
+            var sender = _ref.sender;
+            var text = _ref.text;
+            return React.createElement(
+              'div',
+              {
+                key: i,
+                className: 'py1 px2 flex-none' + (sender === name ? ' bg-white' : '') + (sender === null ? ' gray' : '')
+              },
+              sender ? React.createElement(
+                'span',
+                { className: 'bold' },
+                sender,
+                ': '
+              ) : '',
+              text
+            );
+          })
+        ),
+        React.createElement(
+          'form',
+          { className: 'flex p2 flex-none', onSubmit: this.onSubmit },
+          React.createElement('input', {
+            type: 'text',
+            className: 'field-light mr1 flex-auto not-rounded',
+            ref: 'input',
+            placeholder: 'Message'
+          }),
+          React.createElement(
+            'button',
+            {
+              type: 'submit',
+              className: 'button not-rounded white regualr bg-aqua'
+            },
+            'Send'
+          )
+        )
+      );
+    }
+  }]);
+
+  return Chat;
+})(React.Component);
+
+Chat.propTypes = {
+  name: React.PropTypes.string.isRequired,
+  messages: Cursor.isRequired };
+
+module.exports = Chat;
+
+},{"./prop_types":180,"react":156}],178:[function(require,module,exports){
+'use strict';
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var React = require('react');
+var Square = require('./square');
+var range = require('../util/range');
+
+var _require = require('./prop_types');
+
+var Game = _require.Game;
+var Cursor = _require.Cursor;
+
+var Chessboard = (function (_React$Component) {
+  function Chessboard() {
+    _classCallCheck(this, Chessboard);
+
+    _get(Object.getPrototypeOf(Chessboard.prototype), 'constructor', this).call(this);
+    this.state = {
+      selectedId: null
+    };
+  }
+
+  _inherits(Chessboard, _React$Component);
+
+  _createClass(Chessboard, [{
+    key: 'selectPiece',
+    value: function selectPiece(_ref) {
+      var id = _ref.id;
+
+      this.setState({ selectedId: id });
+    }
+  }, {
+    key: 'clearSelection',
+    value: function clearSelection() {
+      this.setState({ selectedId: null });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this = this;
+
+      var _props = this.props;
+      var game = _props.game;
+      var playerTurn = _props.playerTurn;
+      var playerColor = _props.playerColor;
+
+      var pieces = game.pieces();
+      var selected = game.pieceWithId(this.state.selectedId);
+      var validMoves = selected ? game.validMoves(selected, pieces) : {};
+
+      return React.createElement(
+        'div',
+        { className: 'chessboard flex flex-column flex-none' },
+        range(8).map(function (i) {
+          return React.createElement(
+            'div',
+            { key: i, className: 'flex flex-auto' },
+            range(8).map(function (j) {
+              var position = [i, j];
+              var piece = game.pieceAtPosition(position);
+              var active = !!(piece && piece === selected);
+              var highlighted = !!(validMoves[i] && validMoves[i][j]);
+
+              var onClick = undefined;
+              if (piece && piece.color === playerColor && playerTurn) {
+                onClick = function () {
+                  return _this.selectPiece(piece);
+                };
+              } else if (highlighted) {
+                onClick = function () {
+                  game.movePiece(selected, position);
+                  _this.clearSelection();
+                };
+              } else {
+                onClick = function () {
+                  return _this.clearSelection();
+                };
+              }
+
+              return React.createElement(Square, {
+                key: j,
+                position: position,
+                piece: piece,
+                label: game.labelFor(position),
+                active: active,
+                highlighted: highlighted,
+                onClick: onClick
+              });
+            })
+          );
+        })
+      );
+    }
+  }]);
+
+  return Chessboard;
+})(React.Component);
+
+Chessboard.propTypes = {
+  game: Game.isRequired,
+  playerColor: React.PropTypes.string,
+  playerTurn: React.PropTypes.bool
+};
+
+module.exports = Chessboard;
+// get click action for tile
+
+},{"../util/range":183,"./prop_types":180,"./square":181,"react":156}],179:[function(require,module,exports){
+'use strict';
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var React = require('react');
+
+var _require = require('./prop_types');
+
+var Color = _require.Color;
+
+var GameStatus = (function (_React$Component) {
+  function GameStatus() {
+    _classCallCheck(this, GameStatus);
+
+    if (_React$Component != null) {
+      _React$Component.apply(this, arguments);
+    }
+  }
+
+  _inherits(GameStatus, _React$Component);
+
+  _createClass(GameStatus, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props;
+      var playerColor = _props.playerColor;
+      var playerTurn = _props.playerTurn;
+
+      return React.createElement(
+        'div',
+        { className: 'flex-none gray mb1 h5' },
+        playerColor ? 'Playing as ' + playerColor : 'Observing',
+        playerColor && (playerTurn ? React.createElement(
+          'span',
+          { className: 'right green' },
+          'Your turn'
+        ) : React.createElement(
+          'span',
+          { className: 'right' },
+          'Their turn'
+        ))
+      );
+    }
+  }]);
+
+  return GameStatus;
+})(React.Component);
+
+GameStatus.propTypes = {
+  playerColor: Color,
+  playerTurn: React.PropTypes.bool.isRequired
+};
+
+module.exports = GameStatus;
+
+},{"./prop_types":180,"react":156}],180:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Ultrawave = require('ultrawave');
+var Game = require('../game/game');
+
+module.exports = {
+
+  Game: React.PropTypes.instanceOf(Game),
+
+  Cursor: React.PropTypes.instanceOf(Ultrawave.Cursor),
+
+  Position: React.PropTypes.array,
+
+  Color: React.PropTypes.oneOf(['white', 'black']),
+
+  Piece: React.PropTypes.shape({
+    type: React.PropTypes.oneOf(['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']).isRequired,
+    color: React.PropTypes.oneOf(['white', 'black']).isRequired,
+    position: React.PropTypes.array
+  })
+
+};
+
+},{"../game/game":173,"react":156,"ultrawave":171}],181:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var React = require('react');
+
+var _require = require('./prop_types');
+
+var Piece = _require.Piece;
+var Position = _require.Position;
+var Color = _require.Color;
+
+var Square = (function (_React$Component) {
+  function Square() {
+    _classCallCheck(this, Square);
+
+    if (_React$Component != null) {
+      _React$Component.apply(this, arguments);
+    }
+  }
+
+  _inherits(Square, _React$Component);
+
+  _createClass(Square, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props;
+      var position = _props.position;
+      var piece = _props.piece;
+      var label = _props.label;
+      var active = _props.active;
+      var highlighted = _props.highlighted;
+      var onClick = _props.onClick;
+
+      var _position = _slicedToArray(position, 2);
+
+      var i = _position[0];
+      var j = _position[1];
+
+      // get class to apply color to tile
+      var colorClass = undefined;
+      if (active) {
+        colorClass = 'bg-aqua';
+      } else if (highlighted) {
+        colorClass = 'bg-blue';
+      } else if ((i + j) % 2 === 0) {
+        colorClass = 'bg-darken-2';
+      } else {
+        colorClass = 'bg-darken-3';
+      }
+
+      return React.createElement(
+        'div',
+        {
+          className: 'square flex-auto relative ' + colorClass,
+          onClick: onClick
+        },
+        React.createElement(
+          'div',
+          { className: 'absolute bottom-0 m1 h6 white' },
+          label
+        ),
+        piece && React.createElement('div', { className: 'piece h1 mt1 absolute left-0 right-0 center ' + ('' + piece.color + ' ' + piece.type) })
+      );
+    }
+  }]);
+
+  return Square;
+})(React.Component);
+
+Square.propTypes = {
+  position: Position.isRequired,
+  piece: Piece,
+  label: React.PropTypes.string.isRequired,
+  active: React.PropTypes.bool.isRequired,
+  highlighted: React.PropTypes.bool.isRequired,
+  onClick: React.PropTypes.func.isRequired
+};
+
+module.exports = Square;
+
+},{"./prop_types":180,"react":156}],182:[function(require,module,exports){
+'use strict';
+
+if (!Array.prototype.find) {
+  Array.prototype.find = function (predicate) {
+    if (this == null) {
+      throw new TypeError('Array.prototype.find called on null or undefined');
+    }
+    if (typeof predicate !== 'function') {
+      throw new TypeError('predicate must be a function');
+    }
+    var list = Object(this);
+    var length = list.length >>> 0;
+    var thisArg = arguments[1];
+    var value;
+
+    for (var i = 0; i < length; i++) {
+      value = list[i];
+      if (predicate.call(thisArg, value, i, list)) {
+        return value;
+      }
+    }
+    return undefined;
+  };
+}
+
+if (!Array.prototype.findIndex) {
+  Array.prototype.findIndex = function (predicate) {
+    if (this == null) {
+      throw new TypeError('Array.prototype.findIndex called on null or undefined');
+    }
+    if (typeof predicate !== 'function') {
+      throw new TypeError('predicate must be a function');
+    }
+    var list = Object(this);
+    var length = list.length >>> 0;
+    var thisArg = arguments[1];
+    var value;
+
+    for (var i = 0; i < length; i++) {
+      value = list[i];
+      if (predicate.call(thisArg, value, i, list)) {
+        return i;
+      }
+    }
+    return -1;
+  };
+}
+
+},{}],183:[function(require,module,exports){
+"use strict";
+
+module.exports = function range(count) {
+  var result = new Array(count);
+  for (var i = 0; i < count; i++) {
+    result[i] = i;
+  }return result;
 };
 
 },{}]},{},[175]);
