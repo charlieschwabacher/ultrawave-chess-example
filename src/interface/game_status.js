@@ -7,7 +7,7 @@ class GameStatus extends React.Component {
     const {playerColor, playerTurn} = this.props
 
     return (
-      <div className='flex-none gray mb1 h5'>
+      <div className='flex-none gray mb1 mt3 h5'>
         {playerColor ? `Playing as ${playerColor}` : 'Observing'}
         {
           playerColor && (

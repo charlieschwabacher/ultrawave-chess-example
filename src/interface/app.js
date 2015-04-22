@@ -36,8 +36,8 @@ class App extends React.Component {
           messages={this.props.data.cursor('messages')}
           name={playerColor || `Observer ${this.props.self.slice(0,4)}`}
         />
-        <div className='flex flex-column flex-center flex-justify-center flex-auto scroll'>
-          <div className='mx-auto p2'>
+        <div className='flex flex-column flex-justify-center flex-auto scroll'>
+          <div className='mx-auto px3'>
             <GameStatus
               playerColor={playerColor}
               playerTurn={playerTurn}

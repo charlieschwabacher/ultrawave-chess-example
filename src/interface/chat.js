@@ -23,7 +23,7 @@ class Chat extends React.Component {
 
     return <section className='chat flex flex-column flex-none bg-darken-1'>
       <div
-        className='scroll-y flex flex-column flex-auto py2'
+        className='flex flex-column flex-auto scroll py2'
         ref='messages'
       >
         {

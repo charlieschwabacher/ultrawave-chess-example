@@ -27,7 +27,7 @@ class Chessboard extends React.Component {
     const validMoves = selected ? game.validMoves(selected, pieces) : {}
 
     return (
-      <div className='chessboard flex flex-column flex-none'>
+      <div className='chessboard mb3 flex flex-column flex-none'>
         {
           range(8).map((i) =>
             <div key={i} className='flex flex-auto'>
