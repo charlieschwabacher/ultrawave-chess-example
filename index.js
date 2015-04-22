@@ -22018,11 +22018,6 @@ module.exports = (function () {
   }
 
   _createClass(Game, [{
-    key: 'pieces',
-    value: function pieces() {
-      return this.data.pieces;
-    }
-  }, {
     key: 'pieceAtPosition',
     value: function pieceAtPosition(_ref) {
       var _ref2 = _slicedToArray(_ref, 2);
@@ -22275,6 +22270,8 @@ module.exports = (function () {
     }
   }, {
     key: 'movePiece',
+
+    // move a piece to the position [i, j]
     value: function movePiece(piece, _ref7) {
       var _ref72 = _slicedToArray(_ref7, 2);
 
@@ -22904,9 +22901,8 @@ var Chessboard = (function (_React$Component) {
       var frozen = _props.frozen;
 
       var isPlayerTurn = currentTurn === playerColor;
-      var pieces = game.data.pieces;
       var selected = game.pieceWithId(this.state.selectedId);
-      var legalMoves = selected ? game.legalMovesMap(selected, pieces) : {};
+      var legalMoves = selected ? game.legalMovesMap(selected) : {};
 
       return React.createElement(
         'div',
