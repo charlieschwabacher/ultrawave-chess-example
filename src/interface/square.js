@@ -8,16 +8,16 @@ class Square extends React.Component {
     const [i, j] = position
 
     // get class to apply color to tile
-    let colorClass
-    if (active) {
-      colorClass = 'bg-aqua'
-    } else if (highlighted) {
-      colorClass = 'bg-blue'
-    } else if ((i + j) % 2 === 0) {
-      colorClass = 'bg-silver'
-    } else {
-      colorClass = 'bg-gray'
-    }
+    const colorClass = (
+      active ?
+        'bg-aqua'
+      : highlighted ?
+        'bg-blue'
+      : ((i + j) % 2 === 0) ?
+        'bg-silver'
+      :
+        'bg-gray'
+    )
 
     return <div
       className={`square flex-auto relative ${colorClass}`}
@@ -25,11 +25,13 @@ class Square extends React.Component {
     >
       <div className='absolute bottom-0 m1 h6 white'>{label}</div>
       {
-        piece &&
-        <div className={
-          'piece h1 mt1 absolute left-0 right-0 center ' +
-          `${piece.color} ${piece.type}`
-        }/>
+        piece ?
+          <div className={
+            'piece h1 mt1 absolute left-0 right-0 center ' +
+            `${piece.color} ${piece.type}`
+          }/>
+        :
+          null
       }
     </div>
   }
@@ -42,7 +44,7 @@ Square.propTypes = {
   label: React.PropTypes.string.isRequired,
   active: React.PropTypes.bool.isRequired,
   highlighted: React.PropTypes.bool.isRequired,
-  onClick: React.PropTypes.func.isRequired
+  onClick: React.PropTypes.func
 }
 
 

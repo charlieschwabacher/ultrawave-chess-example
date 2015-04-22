@@ -17,10 +17,12 @@ const ultrawave = new Ultrawave(`ws://${location.hostname}:8081`)
 
 ultrawave
   .joinOrCreate(location.search, initialData, (data) => {
+    const game = new Game(data)
+    window.game = game
     React.render(
       <App
         data={data}
-        game={new Game(data)}
+        game={game}
         self={ultrawave.id}
       />
     , document.body)

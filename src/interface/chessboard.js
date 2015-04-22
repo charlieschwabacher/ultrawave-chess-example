@@ -1,7 +1,7 @@
 const React = require('react')
 const Square = require('./square')
 const range = require('../util/range')
-const {Game, Cursor} = require('./prop_types')
+const {Game, Color} = require('./prop_types')
 
 
 class Chessboard extends React.Component {
@@ -21,10 +21,11 @@ class Chessboard extends React.Component {
   }
 
   render() {
-    const {game, playerTurn, playerColor} = this.props
-    const pieces = game.pieces()
+    const {game, currentTurn, playerColor, frozen} = this.props
+    const isPlayerTurn = currentTurn === playerColor
+    const pieces = game.data.pieces
     const selected = game.pieceWithId(this.state.selectedId)
-    const validMoves = selected ? game.validMoves(selected, pieces) : {}
+    const legalMoves = selected ? game.legalMovesMap(selected, pieces) : {}
 
     return (
       <div className='chessboard mb3 flex flex-column flex-none'>
@@ -36,20 +37,7 @@ class Chessboard extends React.Component {
                   const position = [i, j]
                   const piece = game.pieceAtPosition(position)
                   const active = !!(piece && piece === selected)
-                  const highlighted = !!(validMoves[i] && validMoves[i][j])
-
-                  // get click action for tile
-                  let onClick
-                  if (piece && piece.color === playerColor && playerTurn) {
-                    onClick = () => this.selectPiece(piece)
-                  } else if (highlighted) {
-                    onClick = () => {
-                      game.movePiece(selected, position)
-                      this.clearSelection()
-                    }
-                  } else {
-                    onClick = () => this.clearSelection()
-                  }
+                  const highlighted = !!(legalMoves[i] && legalMoves[i][j])
 
                   return (
                     <Square
@@ -59,7 +47,19 @@ class Chessboard extends React.Component {
                       label={game.labelFor(position)}
                       active={active}
                       highlighted={highlighted}
-                      onClick={onClick}
+                      onClick={
+                        frozen ?
+                          null
+                        : piece && piece.color === playerColor && isPlayerTurn ?
+                          () => this.selectPiece(piece)
+                        : highlighted ?
+                          () => {
+                            game.movePiece(selected, position)
+                            this.clearSelection()
+                          }
+                        :
+                          () => this.clearSelection()
+                      }
                     />
                   )
                 })
@@ -74,9 +74,10 @@ class Chessboard extends React.Component {
 
 
 Chessboard.propTypes = {
+  frozen: React.PropTypes.bool.isRequired,
   game: Game.isRequired,
-  playerColor: React.PropTypes.string,
-  playerTurn: React.PropTypes.bool
+  currentTurn: Color.isRequired,
+  playerColor: Color
 }
 
 

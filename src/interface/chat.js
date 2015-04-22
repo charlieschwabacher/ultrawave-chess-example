@@ -36,7 +36,12 @@ class Chat extends React.Component {
                 ((sender === null) ? ' gray' : '')
               }
             >
-              {sender ? <span className='bold'>{sender}: </span> : ''}
+              {
+                sender ?
+                  <span className='bold'>{sender}: </span>
+                :
+                  null
+              }
               {text}
             </div>
           )

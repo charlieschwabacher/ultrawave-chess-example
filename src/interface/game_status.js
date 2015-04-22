@@ -1,30 +1,65 @@
 const React = require('react')
-const {Color} = require('./prop_types')
+const {Game, Color} = require('./prop_types')
 
 
 class GameStatus extends React.Component {
   render() {
-    const {playerColor, playerTurn} = this.props
+    const {isCheck, isMate, playerColor, currentTurn} = this.props
+    const isPlayerTurn = currentTurn === playerColor
 
-    return (
-      <div className='flex-none gray mb1 mt3 h5'>
-        {playerColor ? `Playing as ${playerColor}` : 'Observing'}
-        {
-          playerColor && (
-            (playerTurn)
-            ? <span className='right green'>Your turn</span>
-            : <span className='right'>Their turn</span>
-          )
-        }
-      </div>
-    )
+    if (isMate) {
+      return (
+        <div className='flex-none mb1 mt3 h5 center bold'>
+          {
+            isCheck && isPlayerTurn ?
+              <span className='red'>CHECKMATE (you lose)</span>
+            : isCheck && playerColor ?
+              <span className='green'>CHECKMATE (you win)</span>
+            : isCheck ?
+              <span className='green'>
+                CHECKMATE ({currentTurn === 'white' ? 'black' : 'white'} wins)
+              </span>
+            :
+              <span className='gray'>STALEMATE</span>
+          }
+        </div>
+      )
+    } else {
+      return (
+        <div className='flex-none gray mb1 mt3 h5'>
+          <span className='gray'>
+            {playerColor ? `Playing as ${playerColor}` : 'Observing'}
+          </span>
+          {
+            playerColor && (
+              <span className={`right ${isPlayerTurn ? 'green' : 'gray'}`}>
+                {isPlayerTurn ? 'Your turn' : 'Their turn'}
+                {
+                  isCheck && isPlayerTurn ?
+                    <span className='red'> (you are in check)</span>
+                  :
+                    null
+                }
+                {
+                  isCheck && ! isPlayerTurn ?
+                    <span className='green'> (they are in check)</span>
+                  :
+                    null
+                }
+              </span>
+            )
+          }
+        </div>
+      )
+    }
   }
 }
 
 
 GameStatus.propTypes = {
-  playerColor: Color,
-  playerTurn: React.PropTypes.bool.isRequired
+  game: Game.isRequired,
+  currentTurn: Color.isRequired,
+  playerColor: Color
 }
 
 

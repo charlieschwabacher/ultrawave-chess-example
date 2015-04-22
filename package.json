@@ -1,7 +1,17 @@
 {
   "name": "ultrawave-chess-example",
   "version": "1.0.0",
+  "author": "Charlie Schwabacher <coschwabacher@gmail.com>",
   "description": "Play chess over webrtc data channels using the ultrawave library",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charlieschwabacher/ultrawave-chat-example.git"
+  },
+  "bugs": {
+    "url": "https://github.com/charlieschwabacher/ultrawave-chat-example/issues"
+  },
+  "homepage": "https://github.com/charlieschwabacher/ultrawave-chat-example",
   "scripts": {
     "start": "node server.js",
     "build-js": "browserify src/index.js -t [ babelify --stage 0 ] --outfile public/index.js",
@@ -9,27 +19,18 @@
     "watch-js": "watch -p 'src/**/*.js' -c 'npm run build-js'",
     "watch-css": "watch -p 'src/*.css' -c 'npm run build-css'",
     "build": "npm run build-js & npm run build-css",
-    "watch": "npm run watch-js & npm run watch-css"
+    "watch": "npm run build; npm run watch-js & npm run watch-css"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/charlieschwabacher/ultrawave-chat-example.git"
-  },
-  "author": "Charlie Schwabacher <coschwabacher@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/charlieschwabacher/ultrawave-chat-example/issues"
-  },
-  "homepage": "https://github.com/charlieschwabacher/ultrawave-chat-example",
   "dependencies": {
     "node-static": "^0.7.6",
     "react": "^0.13.1",
-    "ultrawave": "0.0.13"
+    "ultrawave": "^0.0.13"
   },
   "devDependencies": {
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "cssnext": "^1.3.0",
+    "subtree": "0.0.7",
     "watch-cli": "^0.2.1"
   }
 }

@@ -18,8 +18,11 @@ class App extends React.Component {
   }
 
   render() {
+    const game = this.props.game
     const playerColor = this.playerColor()
-    const playerTurn = playerColor === this.props.data.get('currentTurn')
+    const currentTurn = this.props.data.get('currentTurn')
+    const isCheck = game.isCheck(currentTurn)
+    const isMate = game.isMate(currentTurn)
 
     return <main className='flex flex-column'>
       <div className='flex-none py1 px2 white bg-aqua'>
@@ -39,14 +42,17 @@ class App extends React.Component {
         <div className='flex flex-column flex-justify-center flex-auto scroll'>
           <div className='mx-auto px3'>
             <GameStatus
+              isCheck={isCheck}
+              isMate={isMate}
               playerColor={playerColor}
-              playerTurn={playerTurn}
+              currentTurn={currentTurn}
             />
             <div className='flex-auto'>
               <Chessboard
-                game={this.props.game}
+                frozen={isMate}
+                game={game}
                 playerColor={playerColor}
-                playerTurn={playerTurn}
+                currentTurn={currentTurn}
               />
             </div>
           </div>

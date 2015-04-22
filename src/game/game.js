@@ -4,14 +4,18 @@ const letters = 'abcdefgh'.split('')
 
 
 module.exports = class Game {
+
+
   constructor(cursor) {
     this.cursor = cursor
     this.data = cursor.get()
   }
 
+
   pieces() {
     return this.data.pieces
   }
+
 
   pieceAtPosition([i, j]) {
     return this.data.pieces.find(({position}) => {
@@ -20,39 +24,59 @@ module.exports = class Game {
     })
   }
 
+
   pieceWithId(id) {
     return this.data.pieces.find((piece) => piece.id === id)
   }
+
 
   labelFor([i, j]) {
     return `${letters[j]}${numbers[i]}`
   }
 
+
   // returns a list of all valid moves for a piece, given a set of other pieces
   // sharing the board - this list includes moves that may be illegal (for
   // example moves that would put a player in check)
-  validMovesList(piece, pieces = this.data.pieces) {
-    return validMoves[piece.type](piece, pieces)
+  validMoves(piece, pieces = this.data.pieces) {
+    // get valid moves based on type, filter to stop pieces moving off the board
+    return validMoves[piece.type](piece, pieces).filter(([i,j]) => {
+      return i >= 0 && i < 8 && j >= 0 && j < 8
+    })
   }
 
-  // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
-  // map includes only legal moves
-  validMoves(piece) {
+
+  // return a list of all legal moves for a piece - legal moves are moves that
+  // are valid for the piece and do not leave the king in check
+  legalMoves(piece) {
     const pieces = this.data.pieces
-    const index = pieces.indexOf(piece)
 
-    // get a list of valid moves, filter out illegal moves
-    const moves = this.validMovesList(piece, pieces).filter((move) => {
+    return this.validMoves(piece, pieces).filter((move) => {
+
+      // build a list of pieces as they will be after the move
+
+      // remove any captured piece
+      const [i, j] = move
+      const newPieces = pieces.filter(({position}) => {
+        const [ii, jj] = position
+        return i !== ii || j != jj
+      })
+
+      // update position of moved piece
       const newPiece = {type: piece.type, color: piece.color, position: move}
-      const newPieces = pieces.slice(0)
-      newPieces[index] = newPiece
+      newPieces[newPieces.indexOf(piece)] = newPiece
 
-      return !isCheck(piece.color, newPieces)
+      // move is illegal if it would leave the king in check
+      return !this.isCheck(piece.color, newPieces)
     })
+  }
 
+
+  // returns a 2 layer map of legal moves for a piece {row: {col: true}}
+  legalMovesMap(piece) {
     // convert list to map
     const result = {}
-    for (let move of moves) {
+    for (let move of this.legalMoves(piece)) {
       const [i, j] = move
       result[i] = result[i] || {}
       result[i][j] = true
@@ -61,17 +85,33 @@ module.exports = class Game {
     return result
   }
 
+
+  // returns true if colors king is in check
   isCheck(color, pieces = this.data.pieces) {
     const king = pieces.find((p) => p.color === color && p.type === 'king')
     const [i, j] = king.position
 
     for (let piece of pieces) {
-      for (let [ii, jj] of validMovesList(piece, pieces)) {
-        if (i === ii && j === jj) return true
+      if (piece.color !== color) {
+        for (let [ii, jj] of this.validMoves(piece, pieces)) {
+          if (i === ii && j === jj) return true
+        }
       }
     }
     return false
   }
+
+
+  // returns true if color cannot make a legal move
+  isMate(color, pieces = this.data.pieces) {
+    for (let piece of pieces) {
+      if (piece.color === color && this.legalMoves(piece).length > 0) {
+        return false
+      }
+    }
+    return true
+  }
+
 
   movePiece(piece, [i, j]) {
     const opposingColor = piece.color === 'white' ? 'black' : 'white'
@@ -109,4 +149,6 @@ module.exports = class Game {
       text: `${piece.color} moved ${piece.type} from ${from} to ${to}`
     })
   }
+
+
 }

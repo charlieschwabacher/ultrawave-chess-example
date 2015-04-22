@@ -22059,34 +22059,79 @@ module.exports = (function () {
       return '' + letters[j] + '' + numbers[i];
     }
   }, {
-    key: 'validMovesList',
+    key: 'validMoves',
 
     // returns a list of all valid moves for a piece, given a set of other pieces
     // sharing the board - this list includes moves that may be illegal (for
     // example moves that would put a player in check)
-    value: function validMovesList(piece) {
+    value: (function (_validMoves) {
+      function validMoves(_x) {
+        return _validMoves.apply(this, arguments);
+      }
+
+      validMoves.toString = function () {
+        return _validMoves.toString();
+      };
+
+      return validMoves;
+    })(function (piece) {
       var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
 
-      return validMoves[piece.type](piece, pieces);
+      // get valid moves based on type, filter to stop pieces moving off the board
+      return validMoves[piece.type](piece, pieces).filter(function (_ref5) {
+        var _ref52 = _slicedToArray(_ref5, 2);
+
+        var i = _ref52[0];
+        var j = _ref52[1];
+
+        return i >= 0 && i < 8 && j >= 0 && j < 8;
+      });
+    })
+  }, {
+    key: 'legalMoves',
+
+    // return a list of all legal moves for a piece - legal moves are moves that
+    // are valid for the piece and do not leave the king in check
+    value: function legalMoves(piece) {
+      var _this = this;
+
+      var pieces = this.data.pieces;
+
+      return this.validMoves(piece, pieces).filter(function (move) {
+
+        // build a list of pieces as they will be after the move
+
+        // remove any captured piece
+
+        var _move = _slicedToArray(move, 2);
+
+        var i = _move[0];
+        var j = _move[1];
+
+        var newPieces = pieces.filter(function (_ref6) {
+          var position = _ref6.position;
+
+          var _position2 = _slicedToArray(position, 2);
+
+          var ii = _position2[0];
+          var jj = _position2[1];
+
+          return i !== ii || j != jj;
+        });
+
+        // update position of moved piece
+        var newPiece = { type: piece.type, color: piece.color, position: move };
+        newPieces[newPieces.indexOf(piece)] = newPiece;
+
+        // move is illegal if it would leave the king in check
+        return !_this.isCheck(piece.color, newPieces);
+      });
     }
   }, {
-    key: 'validMoves',
+    key: 'legalMovesMap',
 
-    // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
-    // map includes only legal moves
-    value: function validMoves(piece) {
-      var pieces = this.data.pieces;
-      var index = pieces.indexOf(piece);
-
-      // get a list of valid moves, filter out illegal moves
-      var moves = this.validMovesList(piece, pieces).filter(function (move) {
-        var newPiece = { type: piece.type, color: piece.color, position: move };
-        var newPieces = pieces.slice(0);
-        newPieces[index] = newPiece;
-
-        return !isCheck(piece.color, newPieces);
-      });
-
+    // returns a 2 layer map of legal moves for a piece {row: {col: true}}
+    value: function legalMovesMap(piece) {
       // convert list to map
       var result = {};
       var _iteratorNormalCompletion = true;
@@ -22094,13 +22139,13 @@ module.exports = (function () {
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = moves[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = this.legalMoves(piece)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var move = _step.value;
 
-          var _move = _slicedToArray(move, 2);
+          var _move2 = _slicedToArray(move, 2);
 
-          var i = _move[0];
-          var j = _move[1];
+          var i = _move2[0];
+          var j = _move2[1];
 
           result[i] = result[i] || {};
           result[i][j] = true;
@@ -22124,6 +22169,8 @@ module.exports = (function () {
     }
   }, {
     key: 'isCheck',
+
+    // returns true if colors king is in check
     value: function isCheck(color) {
       var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
 
@@ -22143,30 +22190,33 @@ module.exports = (function () {
 
         for (var _iterator2 = pieces[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var piece = _step2.value;
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
 
-          try {
-            for (var _iterator3 = validMovesList(piece, pieces)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var _step3$value = _slicedToArray(_step3.value, 2);
+          if (piece.color !== color) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
-              var ii = _step3$value[0];
-              var jj = _step3$value[1];
-
-              if (i === ii && j === jj) return true;
-            }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
-          } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-                _iterator3['return']();
+              for (var _iterator3 = this.validMoves(piece, pieces)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var _step3$value = _slicedToArray(_step3.value, 2);
+
+                var ii = _step3$value[0];
+                var jj = _step3$value[1];
+
+                if (i === ii && j === jj) return true;
               }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+                  _iterator3['return']();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
               }
             }
           }
@@ -22189,12 +22239,47 @@ module.exports = (function () {
       return false;
     }
   }, {
-    key: 'movePiece',
-    value: function movePiece(piece, _ref5) {
-      var _ref52 = _slicedToArray(_ref5, 2);
+    key: 'isMate',
 
-      var i = _ref52[0];
-      var j = _ref52[1];
+    // returns true if color cannot make a legal move
+    value: function isMate(color) {
+      var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = pieces[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var piece = _step4.value;
+
+          if (piece.color === color && this.legalMoves(piece).length > 0) {
+            return false;
+          }
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+
+      return true;
+    }
+  }, {
+    key: 'movePiece',
+    value: function movePiece(piece, _ref7) {
+      var _ref72 = _slicedToArray(_ref7, 2);
+
+      var i = _ref72[0];
+      var j = _ref72[1];
 
       var opposingColor = piece.color === 'white' ? 'black' : 'white';
       var pieces = this.data.pieces;
@@ -22205,13 +22290,13 @@ module.exports = (function () {
       this.cursor.set(['pieces', index, 'position'], [i, j]);
 
       // remove any captured piece
-      var capturedPieceIndex = pieces.findIndex(function (_ref6) {
-        var position = _ref6.position;
+      var capturedPieceIndex = pieces.findIndex(function (_ref8) {
+        var position = _ref8.position;
 
-        var _position2 = _slicedToArray(position, 2);
+        var _position3 = _slicedToArray(position, 2);
 
-        var ii = _position2[0];
-        var jj = _position2[1];
+        var ii = _position3[0];
+        var jj = _position3[1];
 
         return i === ii && j === jj;
       });
@@ -22514,9 +22599,11 @@ var ultrawave = new Ultrawave('ws://' + location.hostname + ':8081');
 // when data changes
 
 ultrawave.joinOrCreate(location.search, initialData, function (data) {
+  var game = new Game(data);
+  window.game = game;
   React.render(React.createElement(App, {
     data: data,
-    game: new Game(data),
+    game: game,
     self: ultrawave.id
   }), document.body);
 }).then(function (handle) {
@@ -22576,8 +22663,11 @@ var App = (function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var game = this.props.game;
       var playerColor = this.playerColor();
-      var playerTurn = playerColor === this.props.data.get('currentTurn');
+      var currentTurn = this.props.data.get('currentTurn');
+      var isCheck = game.isCheck(currentTurn);
+      var isMate = game.isMate(currentTurn);
 
       return React.createElement(
         'main',
@@ -22610,16 +22700,19 @@ var App = (function (_React$Component) {
               'div',
               { className: 'mx-auto px3' },
               React.createElement(GameStatus, {
+                isCheck: isCheck,
+                isMate: isMate,
                 playerColor: playerColor,
-                playerTurn: playerTurn
+                currentTurn: currentTurn
               }),
               React.createElement(
                 'div',
                 { className: 'flex-auto' },
                 React.createElement(Chessboard, {
-                  game: this.props.game,
+                  frozen: isMate,
+                  game: game,
                   playerColor: playerColor,
-                  playerTurn: playerTurn
+                  currentTurn: currentTurn
                 })
               )
             )
@@ -22719,7 +22812,7 @@ var Chat = (function (_React$Component) {
                 { className: 'bold' },
                 sender,
                 ': '
-              ) : '',
+              ) : null,
               text
             );
           })
@@ -22773,7 +22866,7 @@ var range = require('../util/range');
 var _require = require('./prop_types');
 
 var Game = _require.Game;
-var Cursor = _require.Cursor;
+var Color = _require.Color;
 
 var Chessboard = (function (_React$Component) {
   function Chessboard() {
@@ -22806,12 +22899,14 @@ var Chessboard = (function (_React$Component) {
 
       var _props = this.props;
       var game = _props.game;
-      var playerTurn = _props.playerTurn;
+      var currentTurn = _props.currentTurn;
       var playerColor = _props.playerColor;
+      var frozen = _props.frozen;
 
-      var pieces = game.pieces();
+      var isPlayerTurn = currentTurn === playerColor;
+      var pieces = game.data.pieces;
       var selected = game.pieceWithId(this.state.selectedId);
-      var validMoves = selected ? game.validMoves(selected, pieces) : {};
+      var legalMoves = selected ? game.legalMovesMap(selected, pieces) : {};
 
       return React.createElement(
         'div',
@@ -22824,23 +22919,7 @@ var Chessboard = (function (_React$Component) {
               var position = [i, j];
               var piece = game.pieceAtPosition(position);
               var active = !!(piece && piece === selected);
-              var highlighted = !!(validMoves[i] && validMoves[i][j]);
-
-              var onClick = undefined;
-              if (piece && piece.color === playerColor && playerTurn) {
-                onClick = function () {
-                  return _this.selectPiece(piece);
-                };
-              } else if (highlighted) {
-                onClick = function () {
-                  game.movePiece(selected, position);
-                  _this.clearSelection();
-                };
-              } else {
-                onClick = function () {
-                  return _this.clearSelection();
-                };
-              }
+              var highlighted = !!(legalMoves[i] && legalMoves[i][j]);
 
               return React.createElement(Square, {
                 key: j,
@@ -22849,7 +22928,14 @@ var Chessboard = (function (_React$Component) {
                 label: game.labelFor(position),
                 active: active,
                 highlighted: highlighted,
-                onClick: onClick
+                onClick: frozen ? null : piece && piece.color === playerColor && isPlayerTurn ? function () {
+                  return _this.selectPiece(piece);
+                } : highlighted ? function () {
+                  game.movePiece(selected, position);
+                  _this.clearSelection();
+                } : function () {
+                  return _this.clearSelection();
+                }
               });
             })
           );
@@ -22862,13 +22948,13 @@ var Chessboard = (function (_React$Component) {
 })(React.Component);
 
 Chessboard.propTypes = {
+  frozen: React.PropTypes.bool.isRequired,
   game: Game.isRequired,
-  playerColor: React.PropTypes.string,
-  playerTurn: React.PropTypes.bool
+  currentTurn: Color.isRequired,
+  playerColor: Color
 };
 
 module.exports = Chessboard;
-// get click action for tile
 
 },{"../util/range":183,"./prop_types":180,"./square":181,"react":156}],179:[function(require,module,exports){
 'use strict';
@@ -22883,6 +22969,7 @@ var React = require('react');
 
 var _require = require('./prop_types');
 
+var Game = _require.Game;
 var Color = _require.Color;
 
 var GameStatus = (function (_React$Component) {
@@ -22900,23 +22987,63 @@ var GameStatus = (function (_React$Component) {
     key: 'render',
     value: function render() {
       var _props = this.props;
+      var isCheck = _props.isCheck;
+      var isMate = _props.isMate;
       var playerColor = _props.playerColor;
-      var playerTurn = _props.playerTurn;
+      var currentTurn = _props.currentTurn;
 
-      return React.createElement(
-        'div',
-        { className: 'flex-none gray mb1 mt3 h5' },
-        playerColor ? 'Playing as ' + playerColor : 'Observing',
-        playerColor && (playerTurn ? React.createElement(
-          'span',
-          { className: 'right green' },
-          'Your turn'
-        ) : React.createElement(
-          'span',
-          { className: 'right' },
-          'Their turn'
-        ))
-      );
+      var isPlayerTurn = currentTurn === playerColor;
+
+      if (isMate) {
+        return React.createElement(
+          'div',
+          { className: 'flex-none mb1 mt3 h5 center bold' },
+          isCheck && isPlayerTurn ? React.createElement(
+            'span',
+            { className: 'red' },
+            'CHECKMATE (you lose)'
+          ) : isCheck && playerColor ? React.createElement(
+            'span',
+            { className: 'green' },
+            'CHECKMATE (you win)'
+          ) : isCheck ? React.createElement(
+            'span',
+            { className: 'green' },
+            'CHECKMATE (',
+            currentTurn === 'white' ? 'black' : 'white',
+            ' wins)'
+          ) : React.createElement(
+            'span',
+            { className: 'gray' },
+            'STALEMATE'
+          )
+        );
+      } else {
+        return React.createElement(
+          'div',
+          { className: 'flex-none gray mb1 mt3 h5' },
+          React.createElement(
+            'span',
+            { className: 'gray' },
+            playerColor ? 'Playing as ' + playerColor : 'Observing'
+          ),
+          playerColor && React.createElement(
+            'span',
+            { className: 'right ' + (isPlayerTurn ? 'green' : 'gray') },
+            isPlayerTurn ? 'Your turn' : 'Their turn',
+            isCheck && isPlayerTurn ? React.createElement(
+              'span',
+              { className: 'red' },
+              ' (you are in check)'
+            ) : null,
+            isCheck && !isPlayerTurn ? React.createElement(
+              'span',
+              { className: 'green' },
+              ' (they are in check)'
+            ) : null
+          )
+        );
+      }
     }
   }]);
 
@@ -22924,8 +23051,9 @@ var GameStatus = (function (_React$Component) {
 })(React.Component);
 
 GameStatus.propTypes = {
-  playerColor: Color,
-  playerTurn: React.PropTypes.bool.isRequired
+  game: Game.isRequired,
+  currentTurn: Color.isRequired,
+  playerColor: Color
 };
 
 module.exports = GameStatus;
@@ -23002,16 +23130,7 @@ var Square = (function (_React$Component) {
       var j = _position[1];
 
       // get class to apply color to tile
-      var colorClass = undefined;
-      if (active) {
-        colorClass = 'bg-aqua';
-      } else if (highlighted) {
-        colorClass = 'bg-blue';
-      } else if ((i + j) % 2 === 0) {
-        colorClass = 'bg-silver';
-      } else {
-        colorClass = 'bg-gray';
-      }
+      var colorClass = active ? 'bg-aqua' : highlighted ? 'bg-blue' : (i + j) % 2 === 0 ? 'bg-silver' : 'bg-gray';
 
       return React.createElement(
         'div',
@@ -23024,7 +23143,7 @@ var Square = (function (_React$Component) {
           { className: 'absolute bottom-0 m1 h6 white' },
           label
         ),
-        piece && React.createElement('div', { className: 'piece h1 mt1 absolute left-0 right-0 center ' + ('' + piece.color + ' ' + piece.type) })
+        piece ? React.createElement('div', { className: 'piece h1 mt1 absolute left-0 right-0 center ' + ('' + piece.color + ' ' + piece.type) }) : null
       );
     }
   }]);
@@ -23038,7 +23157,7 @@ Square.propTypes = {
   label: React.PropTypes.string.isRequired,
   active: React.PropTypes.bool.isRequired,
   highlighted: React.PropTypes.bool.isRequired,
-  onClick: React.PropTypes.func.isRequired
+  onClick: React.PropTypes.func
 };
 
 module.exports = Square;
