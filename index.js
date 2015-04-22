@@ -22064,7 +22064,9 @@ module.exports = (function () {
     // returns a list of all valid moves for a piece, given a set of other pieces
     // sharing the board - this list includes moves that may be illegal (for
     // example moves that would put a player in check)
-    value: function validMovesList(piece, pieces) {
+    value: function validMovesList(piece) {
+      var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
+
       return validMoves[piece.type](piece, pieces);
     }
   }, {
@@ -22072,23 +22074,17 @@ module.exports = (function () {
 
     // returns a 2 layer map of valid moves for a piece {row: {col: true}} - this
     // map includes only legal moves
-    value: (function (_validMoves) {
-      function validMoves(_x) {
-        return _validMoves.apply(this, arguments);
-      }
-
-      validMoves.toString = function () {
-        return _validMoves.toString();
-      };
-
-      return validMoves;
-    })(function (piece) {
+    value: function validMoves(piece) {
+      var pieces = this.data.pieces;
+      var index = pieces.indexOf(piece);
 
       // get a list of valid moves, filter out illegal moves
-      var validMoves = this.validMovesList(piece, this.data.pieces);
-      var moves = validMoves.filter(function (move) {
-        // FILL THIS IN TO FILTER OUT MOVES THAT WOULD PUT A PLAYER IN CHECK
-        return true;
+      var moves = this.validMovesList(piece, pieces).filter(function (move) {
+        var newPiece = { type: piece.type, color: piece.color, position: move };
+        var newPieces = pieces.slice(0);
+        newPieces[index] = newPiece;
+
+        return !isCheck(piece.color, newPieces);
       });
 
       // convert list to map
@@ -22125,13 +22121,73 @@ module.exports = (function () {
       }
 
       return result;
-    })
+    }
   }, {
     key: 'isCheck',
-    value: function isCheck(color, pieces) {}
-  }, {
-    key: 'isCheckmate',
-    value: function isCheckmate() {}
+    value: function isCheck(color) {
+      var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
+
+      var king = pieces.find(function (p) {
+        return p.color === color && p.type === 'king';
+      });
+
+      var _king$position = _slicedToArray(king.position, 2);
+
+      var i = _king$position[0];
+      var j = _king$position[1];
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+
+        for (var _iterator2 = pieces[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var piece = _step2.value;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = validMovesList(piece, pieces)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var _step3$value = _slicedToArray(_step3.value, 2);
+
+              var ii = _step3$value[0];
+              var jj = _step3$value[1];
+
+              if (i === ii && j === jj) return true;
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+                _iterator3['return']();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+            _iterator2['return']();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return false;
+    }
   }, {
     key: 'movePiece',
     value: function movePiece(piece, _ref5) {
@@ -22143,45 +22199,42 @@ module.exports = (function () {
       var opposingColor = piece.color === 'white' ? 'black' : 'white';
       var pieces = this.data.pieces;
       var index = pieces.indexOf(piece);
+      var initialPosition = piece.position;
 
-      if (index >= 0) {
-        var initialPosition = piece.position;
+      // update position of piece
+      this.cursor.set(['pieces', index, 'position'], [i, j]);
 
-        // update position of piece
-        this.cursor.set(['pieces', index, 'position'], [i, j]);
+      // remove any captured piece
+      var capturedPieceIndex = pieces.findIndex(function (_ref6) {
+        var position = _ref6.position;
 
-        // remove any captured piece
-        var capturedPieceIndex = pieces.findIndex(function (_ref6) {
-          var position = _ref6.position;
+        var _position2 = _slicedToArray(position, 2);
 
-          var _position2 = _slicedToArray(position, 2);
+        var ii = _position2[0];
+        var jj = _position2[1];
 
-          var ii = _position2[0];
-          var jj = _position2[1];
-
-          return i === ii && j === jj;
-        });
-        if (capturedPieceIndex >= 0) {
-          this.cursor.splice(['pieces'], capturedPieceIndex, 1);
-        }
-
-        // if a pawn has moved to the last row, promote it to a queen
-        var advanceRow = piece.color === 'white' ? 0 : 7;
-        if (piece.type === 'pawn' && i === advanceRow) {
-          this.cursor.set(['pieces', index, 'type'], 'queen');
-        }
-
-        // update current turn
-        this.cursor.set('currentTurn', opposingColor);
-
-        // post a message
-        var from = this.labelFor(initialPosition);
-        var to = this.labelFor(piece.position);
-        this.cursor.push('messages', {
-          sender: null,
-          text: '' + piece.color + ' moved ' + piece.type + ' from ' + from + ' to ' + to
-        });
+        return i === ii && j === jj;
+      });
+      if (capturedPieceIndex >= 0) {
+        this.cursor.splice(['pieces'], capturedPieceIndex, 1);
       }
+
+      // if a pawn has moved to the last row, promote it to a queen
+      var advanceRow = piece.color === 'white' ? 0 : 7;
+      if (piece.type === 'pawn' && i === advanceRow) {
+        this.cursor.set(['pieces', index, 'type'], 'queen');
+      }
+
+      // update current turn
+      this.cursor.set('currentTurn', opposingColor);
+
+      // post a message
+      var from = this.labelFor(initialPosition);
+      var to = this.labelFor(piece.position);
+      this.cursor.push('messages', {
+        sender: null,
+        text: '' + piece.color + ' moved ' + piece.type + ' from ' + from + ' to ' + to
+      });
     }
   }]);
 
@@ -22552,10 +22605,10 @@ var App = (function (_React$Component) {
           }),
           React.createElement(
             'div',
-            { className: 'flex flex-column flex-center flex-justify-center flex-auto scroll' },
+            { className: 'flex flex-column flex-justify-center flex-auto scroll' },
             React.createElement(
               'div',
-              { className: 'mx-auto p2' },
+              { className: 'mx-auto px3' },
               React.createElement(GameStatus, {
                 playerColor: playerColor,
                 playerTurn: playerTurn
@@ -22649,7 +22702,7 @@ var Chat = (function (_React$Component) {
         React.createElement(
           'div',
           {
-            className: 'scroll-y flex flex-column flex-auto py2',
+            className: 'flex flex-column flex-auto scroll py2',
             ref: 'messages'
           },
           messages.map(function (_ref, i) {
@@ -22762,7 +22815,7 @@ var Chessboard = (function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: 'chessboard flex flex-column flex-none' },
+        { className: 'chessboard mb3 flex flex-column flex-none' },
         range(8).map(function (i) {
           return React.createElement(
             'div',
@@ -22852,7 +22905,7 @@ var GameStatus = (function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: 'flex-none gray mb1 h5' },
+        { className: 'flex-none gray mb1 mt3 h5' },
         playerColor ? 'Playing as ' + playerColor : 'Observing',
         playerColor && (playerTurn ? React.createElement(
           'span',
