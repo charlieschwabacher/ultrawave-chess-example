@@ -12,11 +12,6 @@ module.exports = class Game {
   }
 
 
-  pieces() {
-    return this.data.pieces
-  }
-
-
   pieceAtPosition([i, j]) {
     return this.data.pieces.find(({position}) => {
       const [ii, jj] = position
@@ -113,6 +108,7 @@ module.exports = class Game {
   }
 
 
+  // move a piece to the position [i, j]
   movePiece(piece, [i, j]) {
     const opposingColor = piece.color === 'white' ? 'black' : 'white'
     const pieces = this.data.pieces

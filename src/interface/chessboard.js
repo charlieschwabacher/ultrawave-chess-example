@@ -23,9 +23,8 @@ class Chessboard extends React.Component {
   render() {
     const {game, currentTurn, playerColor, frozen} = this.props
     const isPlayerTurn = currentTurn === playerColor
-    const pieces = game.data.pieces
     const selected = game.pieceWithId(this.state.selectedId)
-    const legalMoves = selected ? game.legalMovesMap(selected, pieces) : {}
+    const legalMoves = selected ? game.legalMovesMap(selected) : {}
 
     return (
       <div className='chessboard mb3 flex flex-column flex-none'>
