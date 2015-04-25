@@ -22595,7 +22595,7 @@ var ultrawave = new Ultrawave('ws://' + location.hostname + ':8081');
 // create a group based on the url search string, update our react app
 // when data changes
 
-ultrawave.joinOrCreate(location.search, initialData, function (data) {
+ultrawave.joinOrCreate('chess:' + location.search, initialData, function (data) {
   var game = new Game(data);
   window.game = game;
   React.render(React.createElement(App, {
