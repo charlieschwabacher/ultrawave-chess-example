@@ -5,7 +5,7 @@ var http = require('http')
 
 // run a peering server
 
-var ultrawaveServer = new UltrawaveServer(8081);
+var ultrawaveServer = new UltrawaveServer({port: 8081});
 
 
 
