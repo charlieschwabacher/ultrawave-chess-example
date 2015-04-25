@@ -16,7 +16,7 @@ const ultrawave = new Ultrawave(`ws://${location.hostname}:8081`)
 // when data changes
 
 ultrawave
-  .joinOrCreate(location.search, initialData, (data) => {
+  .joinOrCreate(`chess:${location.search}`, initialData, (data) => {
     const game = new Game(data)
     window.game = game
     React.render(

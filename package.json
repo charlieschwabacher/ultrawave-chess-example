@@ -30,7 +30,6 @@
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "cssnext": "^1.3.0",
-    "subtree": "0.0.7",
     "watch-cli": "^0.2.1"
   }
 }
