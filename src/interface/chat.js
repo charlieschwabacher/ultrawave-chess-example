@@ -56,7 +56,7 @@ class Chat extends React.Component {
         />
         <button
           type='submit'
-          className='button not-rounded white regualr bg-aqua'
+          className='button not-rounded white regualar bg-aqua'
         >
           Send
         </button>
