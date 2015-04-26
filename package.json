@@ -20,7 +20,7 @@
     "watch-css": "watch -p 'src/*.css' -c 'npm run build-css'",
     "build": "npm run build-js & npm run build-css",
     "watch": "npm run build; npm run watch-js & npm run watch-css",
-    "gh-deploy": "git subtree push --prefix public origin gh-pages",
+    "gh-deploy": "git subtree push --prefix public origin gh-pages"
   },
   "dependencies": {
     "node-static": "^0.7.6",
