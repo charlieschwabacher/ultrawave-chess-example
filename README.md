@@ -7,6 +7,6 @@ Games are identified using the query string - the first user to connect with a g
 
 The game is entirely peer to peer, with no data sent to the server.  Once a game is done and everyone has closed the tab, its query string will be available again for a new game.
 
-To run locally, `npm install` and `npm start`, then visit [localhost:8080](http://localhost:8080/) in a few tabs and try making some moves.
+To run locally, `npm install` and `npm start`, and visit [localhost:8080](http://localhost:8080/).
 
 The source is es6 and css4 - after editing, `npm run build` to compile w/ babel and cssnext.

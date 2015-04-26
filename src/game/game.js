@@ -81,7 +81,7 @@ module.exports = class Game {
   }
 
 
-  // returns true if colors king is in check
+  // returns true if color's king is in check
   isCheck(color, pieces = this.data.pieces) {
     const king = pieces.find((p) => p.color === color && p.type === 'king')
     const [i, j] = king.position
