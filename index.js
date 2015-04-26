@@ -22165,7 +22165,7 @@ module.exports = (function () {
   }, {
     key: 'isCheck',
 
-    // returns true if colors king is in check
+    // returns true if color's king is in check
     value: function isCheck(color) {
       var pieces = arguments[1] === undefined ? this.data.pieces : arguments[1];
 
@@ -22678,10 +22678,18 @@ var App = (function (_React$Component) {
           React.createElement(
             'a',
             {
-              className: 'right',
+              className: 'right ml2',
               href: '//github.com/charlieschwabacher/ultrawave-chess-example'
             },
             'Github'
+          ),
+          React.createElement(
+            'a',
+            {
+              className: 'right',
+              href: '?' + Math.random().toString(36).slice(2)
+            },
+            'New Game'
           )
         ),
         React.createElement(
@@ -22723,7 +22731,7 @@ var App = (function (_React$Component) {
   return App;
 })(React.Component);
 
-App.propTypes = {
+App.propsTypes = {
   data: Cursor.isRequired,
   game: Game.isRequired,
   self: React.PropTypes.string
