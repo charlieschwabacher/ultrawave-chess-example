@@ -28,10 +28,16 @@ class App extends React.Component {
       <div className='flex-none py1 px2 white bg-aqua'>
         <span className='knight'/> Chess
         <a
-          className="right"
+          className="right ml2"
           href="//github.com/charlieschwabacher/ultrawave-chess-example"
         >
           Github
+        </a>
+        <a
+          className="right"
+          href={`?${Math.random().toString(36).slice(2)}`}
+        >
+          New Game
         </a>
       </div>
       <div className='flex flex-auto'>
