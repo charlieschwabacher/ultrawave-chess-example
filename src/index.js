@@ -7,9 +7,14 @@ const Game = require('./game/game')
 const initialData = require('./data/initial_data')
 
 
-// connect to our peering server on port 8081
+// connect to our local peering server (or, if this is running on github pages,
+// connect to the example server on openshift)
 
-const ultrawave = new Ultrawave(`ws://${location.hostname}:8081`)
+const ultrawave = new Ultrawave(
+  location.hostname === 'localhost'
+  ? 'ws://localhost:8000'
+  : 'ws://examples-ultrawave.rhcloud.com:8000'
+)
 
 
 // create a group based on the url search string, update our react app
