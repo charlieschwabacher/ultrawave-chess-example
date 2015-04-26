@@ -22731,7 +22731,7 @@ var App = (function (_React$Component) {
   return App;
 })(React.Component);
 
-App.propsTypes = {
+App.propTypes = {
   data: Cursor.isRequired,
   game: Game.isRequired,
   self: React.PropTypes.string
