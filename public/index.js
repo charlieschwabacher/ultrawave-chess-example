@@ -22771,7 +22771,9 @@ var Chat = (function (_React$Component) {
       input.value = '';
 
       // push the new message onto the array in ultrawave
-      _this.props.messages.push({ sender: _this.props.name, text: message });
+      if (message.length > 0) {
+        _this.props.messages.push({ sender: _this.props.name, text: message });
+      }
     };
   }
 
@@ -22828,7 +22830,7 @@ var Chat = (function (_React$Component) {
           { className: 'flex p2 flex-none', onSubmit: this.onSubmit },
           React.createElement('input', {
             type: 'text',
-            className: 'field-light mr1 flex-auto not-rounded',
+            className: 'field-light border-white flex-auto rounded-left',
             ref: 'input',
             placeholder: 'Message'
           }),
@@ -22836,7 +22838,7 @@ var Chat = (function (_React$Component) {
             'button',
             {
               type: 'submit',
-              className: 'button not-rounded white regualar bg-aqua'
+              className: 'button rounded-right white regular bg-aqua x-group-item'
             },
             'Send'
           )
@@ -22974,7 +22976,6 @@ var React = require('react');
 
 var _require = require('./prop_types');
 
-var Game = _require.Game;
 var Color = _require.Color;
 
 var GameStatus = (function (_React$Component) {
@@ -23056,7 +23057,8 @@ var GameStatus = (function (_React$Component) {
 })(React.Component);
 
 GameStatus.propTypes = {
-  game: Game.isRequired,
+  isCheck: React.PropTypes.bool.isRequired,
+  isMate: React.PropTypes.bool.isRequired,
   currentTurn: Color.isRequired,
   playerColor: Color
 };

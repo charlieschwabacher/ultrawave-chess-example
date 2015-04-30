@@ -9,6 +9,11 @@ main {
   font-family: Avenir Next, Helvetica Neue, Helvetica, sans-serif;
 }
 
+.button:focus, .field-light:focus {
+  position: relative;
+}
+
+
 .scroll {
   overflow: auto;
 }

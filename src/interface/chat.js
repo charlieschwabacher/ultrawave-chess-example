@@ -3,6 +3,7 @@ const {Cursor} = require('./prop_types')
 
 
 class Chat extends React.Component {
+
   onSubmit = (e) => {
     e.preventDefault()
     const input = this.refs.input.getDOMNode()
@@ -10,7 +11,9 @@ class Chat extends React.Component {
     input.value = ''
 
     // push the new message onto the array in ultrawave
-    this.props.messages.push({sender: this.props.name, text: message})
+    if (message.length > 0) {
+      this.props.messages.push({sender: this.props.name, text: message})
+    }
   }
 
   render() {
@@ -50,13 +53,13 @@ class Chat extends React.Component {
       <form className='flex p2 flex-none' onSubmit={this.onSubmit}>
         <input
           type='text'
-          className='field-light mr1 flex-auto not-rounded'
+          className='field-light border-white flex-auto rounded-left'
           ref='input'
           placeholder='Message'
         />
         <button
           type='submit'
-          className='button not-rounded white regualar bg-aqua'
+          className='button rounded-right white regular bg-aqua x-group-item'
         >
           Send
         </button>

@@ -1,5 +1,5 @@
 const React = require('react')
-const {Game, Color} = require('./prop_types')
+const {Color} = require('./prop_types')
 
 
 class GameStatus extends React.Component {
@@ -57,7 +57,8 @@ class GameStatus extends React.Component {
 
 
 GameStatus.propTypes = {
-  game: Game.isRequired,
+  isCheck: React.PropTypes.bool.isRequired,
+  isMate: React.PropTypes.bool.isRequired,
   currentTurn: Color.isRequired,
   playerColor: Color
 }
