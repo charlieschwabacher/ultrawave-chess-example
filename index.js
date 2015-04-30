@@ -22312,7 +22312,7 @@ module.exports = (function () {
 
       // post a message
       var from = this.labelFor(initialPosition);
-      var to = this.labelFor(piece.position);
+      var to = this.labelFor([i, j]);
       this.cursor.push('messages', {
         sender: null,
         text: '' + piece.color + ' moved ' + piece.type + ' from ' + from + ' to ' + to
