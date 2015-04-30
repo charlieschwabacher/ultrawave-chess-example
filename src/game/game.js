@@ -139,7 +139,7 @@ module.exports = class Game {
 
     // post a message
     const from = this.labelFor(initialPosition)
-    const to = this.labelFor(piece.position)
+    const to = this.labelFor([i, j])
     this.cursor.push('messages', {
       sender: null,
       text: `${piece.color} moved ${piece.type} from ${from} to ${to}`
