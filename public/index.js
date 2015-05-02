@@ -20722,7 +20722,7 @@ var Ultrawave = (function () {
     this.clocks = new Map();
     this.changes = new MapArray(); // arrays of changes [data, clock, method, args]
     this.timeouts = new MapMapMap();
-    this.peerGroup = new PeerGroup(url);
+    this.peerGroup = new PeerGroup({ url: url });
 
     // wait for id to be assigned by server before binding to other events
 
@@ -20732,7 +20732,7 @@ var Ultrawave = (function () {
 
       // add peers to clock immediately
 
-      _this.peerGroup.on(_this.peerGroup.events.peer, function (group, id) {
+      _this.peerGroup.on(PeerGroup.events.peer, function (group, id) {
         var clock = _this.clocks.get(group);
         if (clock != null) {
           clock.touch(id);
@@ -20966,7 +20966,7 @@ var Ultrawave = (function () {
     value: function join(group, cb) {
       var _this4 = this;
 
-      var events = this.peerGroup.events;
+      var events = PeerGroup.events;
 
       return new Promise(function (resolve, reject) {
         _this4.peerGroup.ready.then(function (id) {
@@ -21522,7 +21522,7 @@ var log = function log(message) {
 // we will set configuration and events on the prototype after creating the
 // PeerGroup class
 
-var configuration = {
+var defaultConfiguration = {
   iceServers: [{ url: 'stun:stun.l.google.com:19302' }]
 };
 
@@ -21538,12 +21538,16 @@ var events = {
 };
 
 var PeerGroup = (function () {
-  function PeerGroup(url) {
+  function PeerGroup(_ref) {
     var _this = this;
+
+    var url = _ref.url;
+    var configuration = _ref.configuration;
 
     _classCallCheck(this, PeerGroup);
 
     this.ws = new WS(url);
+    this.configuration = configuration || defaultConfiguration;
     this.groups = new Set();
     this.connections = new MapMap();
     this.channels = new MapMap();
@@ -21583,27 +21587,38 @@ var PeerGroup = (function () {
     this.ws.on('open', function () {
       log('ws opened');
       _this.open = true;
-      _this.trigger(_this.events.open, _this);
+      _this.trigger(events.open, _this);
     });
 
     this.ws.on('close', function () {
       log('ws closed');
       _this.open = false;
-      _this.trigger(_this.events.close, _this);
+      _this.trigger(events.close, _this);
     });
 
     this.ready = new Promise(function (resolve) {
-      _this.ws.on('start', function (id) {
-        log('ws started');
-        resolve(id);
-        _this.id = id;
-        _this.trigger(_this.events.start, _this);
+      var reclaimAttempted = false;
+      _this.ws.on('id', function (_ref2) {
+        var id = _ref2.id;
+        var secret = _ref2.secret;
+
+        var existingSecret = localStorage.getItem('peerGroupSecret');
+        if (!reclaimAttempted && existingSecret && secret != existingSecret) {
+          reclaimAttempted = true;
+          _this.ws.send('id', existingSecret);
+        } else {
+          log('ws started');
+          _this.id = id;
+          if (secret != null) localStorage.setItem('peerGroupSecret', secret);
+          resolve(id);
+          _this.trigger(events.start, _this);
+        }
       });
     });
 
-    this.ws.on('request offer', function (_ref) {
-      var group = _ref.group;
-      var from = _ref.from;
+    this.ws.on('request offer', function (_ref3) {
+      var group = _ref3.group;
+      var from = _ref3.from;
 
       log('recieved request for offer');
       if (!_this.groups.has(group)) return;
@@ -21613,7 +21628,7 @@ var PeerGroup = (function () {
 
       dataChannel.addEventListener('open', function () {
         log('data channel opened to peer');
-        _this.trigger(_this.events.peer, group, from);
+        _this.trigger(events.peer, group, from);
       });
 
       connection.addEventListener('icecandidate', function (e) {
@@ -21640,10 +21655,10 @@ var PeerGroup = (function () {
       addPeerConnection(group, from, connection);
     });
 
-    this.ws.on('offer', function (_ref2) {
-      var group = _ref2.group;
-      var from = _ref2.from;
-      var sdp = _ref2.sdp;
+    this.ws.on('offer', function (_ref4) {
+      var group = _ref4.group;
+      var from = _ref4.from;
+      var sdp = _ref4.sdp;
 
       log('recieved offer');
       if (!_this.groups.has(group)) return;
@@ -21653,7 +21668,7 @@ var PeerGroup = (function () {
       connection.addEventListener('datachannel', function (e) {
         log('data channel opened by peer');
         addDataChannel(group, from, e.channel);
-        _this.trigger(_this.events.peer, group, from);
+        _this.trigger(events.peer, group, from);
       });
 
       connection.addEventListener('icecandidate', function (e) {
@@ -21685,10 +21700,10 @@ var PeerGroup = (function () {
       addPeerConnection(group, from, connection);
     });
 
-    this.ws.on('answer', function (_ref3) {
-      var group = _ref3.group;
-      var from = _ref3.from;
-      var sdp = _ref3.sdp;
+    this.ws.on('answer', function (_ref5) {
+      var group = _ref5.group;
+      var from = _ref5.from;
+      var sdp = _ref5.sdp;
 
       log('recieved answer');
       var connection = _this.connections.get(group, from);
@@ -21702,10 +21717,10 @@ var PeerGroup = (function () {
       }
     });
 
-    this.ws.on('candidate', function (_ref4) {
-      var group = _ref4.group;
-      var from = _ref4.from;
-      var candidate = _ref4.candidate;
+    this.ws.on('candidate', function (_ref6) {
+      var group = _ref6.group;
+      var from = _ref6.from;
+      var candidate = _ref6.candidate;
 
       log('recieved ice candidate');
       var connection = _this.connections.get(group, from);
@@ -21741,7 +21756,7 @@ var PeerGroup = (function () {
         _this2.ws.off(action, onSuccess);
         _this2.ws.off(actionFailure, onFailure);
         _this2.groups.add(group);
-        _this2.trigger(_this2.events.join, group);
+        _this2.trigger(events.join, group);
         success();
       });
 
@@ -21826,7 +21841,7 @@ var PeerGroup = (function () {
       this.connections['delete'](group);
       this.channels['delete'](group);
 
-      this.trigger(this.events.leave, group);
+      this.trigger(events.leave, group);
     }
   }, {
     key: 'on',
@@ -21894,8 +21909,7 @@ var PeerGroup = (function () {
 })();
 
 PeerGroup.log = true;
-PeerGroup.prototype.events = events;
-PeerGroup.prototype.configuration = configuration;
+PeerGroup.events = events;
 
 module.exports = PeerGroup;
 },{"./map_map":166,"./map_set":167,"./ws":169}],169:[function(require,module,exports){

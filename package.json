@@ -25,7 +25,7 @@
   "dependencies": {
     "node-static": "^0.7.6",
     "react": "^0.13.1",
-    "ultrawave": "0.0.15"
+    "ultrawave": "0.0.18"
   },
   "devDependencies": {
     "babelify": "^6.0.2",
