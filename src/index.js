@@ -23,7 +23,6 @@ const ultrawave = new Ultrawave(
 ultrawave
   .joinOrCreate(`chess:${location.search}`, initialData, (data) => {
     const game = new Game(data)
-    window.game = game
     React.render(
       <App
         data={data}
